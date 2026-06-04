@@ -290,7 +290,8 @@
       "password": "Password",
       "submit": "Log in",
       "forgot_password": "Forgot your password?",
-      "create_account": "Create account"
+      "create_account": "Create account",
+      "already_logged_in": "You are already logged in"
     },
     "register": {
       "title": "Create account",

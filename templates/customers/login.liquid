@@ -4,94 +4,104 @@
 
 <style>
   .login-page {
-    padding-top: 6rem;
-    padding-bottom: 8rem;
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 6rem 2rem 8rem;
+    text-align: center;
   }
 
-  .login-page .field {
-    margin-top: 1.6rem;
+  .login-page h1 {
+    margin-top: 0;
+    margin-bottom: 1.6rem;
   }
 
-  .login-page .field__input {
-    padding-top: 2rem;
-    padding-bottom: 0.8rem;
-    width: 100%;
+  .login-page .login-page__subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
   }
 
-  .login-page .field__label {
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.4rem;
-    transition: top 0.15s ease, font-size 0.15s ease, transform 0.15s ease;
-  }
-
-  .login-page .field__input:focus ~ .field__label,
-  .login-page .field__input:not(:placeholder-shown) ~ .field__label,
-  .login-page .field__input:-webkit-autofill ~ .field__label {
-    top: 0.7rem;
-    font-size: 1.1rem;
-    transform: none;
-  }
-
-  .login-page .form__message {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    color: rgb(var(--color-error));
-    font-size: 1.4rem;
-    margin-bottom: 2rem;
+  .login-page__field {
+    margin-bottom: 1.6rem;
     text-align: left;
   }
 
-  .login-page .form__message .svg-wrapper {
-    width: 1.6rem;
-    flex-shrink: 0;
+  .login-page__label {
+    display: block;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .login-page__input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem 1.4rem;
+    font-size: 1.5rem;
+    font-family: inherit;
+    border: 0.1rem solid rgba(var(--color-foreground), 0.2);
+    border-radius: var(--style-border-radius-inputs);
+    background-color: var(--color-background);
+    color: rgb(var(--color-foreground));
+    transition: border-color 0.15s ease;
+    outline: none;
+  }
+
+  .login-page__input:focus {
+    border-color: rgba(var(--color-foreground), 0.6);
+  }
+
+  .login-page__input::placeholder {
+    color: rgba(var(--color-foreground), 0.35);
+  }
+
+  .login-page__submit {
+    margin-top: 2.4rem;
+    width: 100%;
+  }
+
+  .login-page__links {
+    margin-top: 2rem;
+    font-size: 1.4rem;
+  }
+
+  .login-page__links a {
+    color: rgb(var(--color-foreground));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .login-page .form-errors {
-    background: rgba(var(--color-error), 0.06);
+    background: rgba(220, 50, 50, 0.07);
     border-radius: var(--style-border-radius-inputs);
     padding: 1.2rem 1.6rem;
     margin-bottom: 2rem;
     text-align: left;
+    font-size: 1.4rem;
+    color: #c0392b;
   }
 
   .login-page .form-errors ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    font-size: 1.4rem;
-    color: rgb(var(--color-error));
-  }
-
-  .login-page button[type="submit"] {
-    width: 100%;
-    margin-top: 2.4rem;
-    margin-bottom: 0;
-  }
-
-  .login-page .login-links {
-    margin-top: 1.6rem;
-    font-size: 1.4rem;
-    color: rgba(var(--color-foreground), 0.65);
-  }
-
-  .login-page .login-links a {
-    color: rgb(var(--color-foreground));
-    text-underline-offset: 0.2em;
   }
 </style>
 
-<div class="customer login login-page">
+<div class="login-page">
   <h1>{{ 'customer.login.title' | t }}</h1>
 
   {% if customer %}
     <p>{{ 'customer.login.already_logged_in' | t }}</p>
-    <a href="{{ routes.account_url }}">{{ 'customer.account.title' | t }}</a>
+    <a href="{{ routes.account_url }}" class="button">{{ 'customer.account.title' | t }}</a>
   {% else %}
+    <p class="login-page__subtitle">
+      {{ 'customer.login.create_account' | t }}? <a href="{{ routes.register_url }}">{{ 'customer.register.title' | t }}</a>
+    </p>
+
     {%- form 'customer_login' -%}
       {%- if form.errors -%}
-        <div class="form-errors" tabindex="-1" autofocus>
+        <div class="form-errors">
           <ul>
             {%- for field in form.errors -%}
               <li>
@@ -107,47 +117,41 @@
         </div>
       {%- endif -%}
 
-      <div class="field">
+      <div class="login-page__field">
+        <label class="login-page__label" for="CustomerEmail">{{ 'customer.login.email' | t }}</label>
         <input
-          class="field__input"
+          class="login-page__input"
           id="CustomerEmail"
           name="customer[email]"
           type="email"
           autocorrect="off"
           autocapitalize="off"
           autocomplete="email"
-          required
-          placeholder=" "
+          placeholder="{{ 'customer.login.email' | t }}"
           value="{{ form.email }}"
+          required
         >
-        <label class="field__label" for="CustomerEmail">
-          {{ 'customer.login.email' | t }}
-        </label>
       </div>
 
-      <div class="field">
+      <div class="login-page__field">
+        <label class="login-page__label" for="CustomerPassword">{{ 'customer.login.password' | t }}</label>
         <input
-          class="field__input"
+          class="login-page__input"
           id="CustomerPassword"
           name="customer[password]"
           type="password"
           autocomplete="current-password"
+          placeholder="{{ 'customer.login.password' | t }}"
           required
-          placeholder=" "
         >
-        <label class="field__label" for="CustomerPassword">
-          {{ 'customer.login.password' | t }}
-        </label>
       </div>
 
-      <button type="submit">
+      <button type="submit" class="button login-page__submit">
         {{ 'customer.login.submit' | t }}
       </button>
 
-      <p class="login-links">
+      <p class="login-page__links">
         <a href="{{ routes.password_recovery_url }}">{{ 'customer.login.forgot_password' | t }}</a>
-        &nbsp;&bull;&nbsp;
-        <a href="{{ routes.register_url }}">{{ 'customer.login.create_account' | t }}</a>
       </p>
     {%- endform -%}
   {% endif %}
