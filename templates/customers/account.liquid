@@ -2,138 +2,528 @@
 
 {{ 'customer.css' | asset_url | stylesheet_tag }}
 
-<div class="customer account" style="padding-top: 4rem; padding-bottom: 5rem;">
-  <div>
-    <h1 class="customer__title">{{ 'customer.account.title' | t }}</h1>
-    <a href="{{ routes.account_logout_url }}">
-      <span class="svg-wrapper">
-        {{- 'icon-account.svg' | inline_asset_content -}}
-      </span>
-      {{ 'customer.log_out' | t }}
+<style>
+  #MainContent { background: #f6f6f6; }
+
+  .ac {
+    max-width: 96rem;
+    margin: 0 auto;
+    padding: 0 2.4rem 6rem;
+  }
+
+  /* ── Tab nav ── */
+  .ac__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 2.4rem;
+    margin-bottom: 2.8rem;
+    border-bottom: 0.1rem solid rgba(0,0,0,0.1);
+  }
+
+  .ac__tabs {
+    display: flex;
+    gap: 2.4rem;
+  }
+
+  .ac__tab {
+    background: none;
+    border: none;
+    border-bottom: 0.2rem solid transparent;
+    padding: 0 0 1.2rem;
+    font-size: 1.45rem;
+    font-weight: 500;
+    font-family: inherit;
+    color: rgba(0,0,0,0.45);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .ac__tab.is-active {
+    color: #000;
+    border-bottom-color: #000;
+  }
+
+  .ac__avatar {
+    width: 3.4rem;
+    height: 3.4rem;
+    border-radius: 50%;
+    background: #222;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    margin-bottom: 1.2rem;
+  }
+
+  /* ── Panels ── */
+  .ac__panel { display: none; }
+  .ac__panel.is-active { display: block; }
+
+  .ac__panel-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 2rem;
+  }
+
+  /* ── Orders grid ── */
+  .ac__orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+    gap: 1.6rem;
+  }
+
+  .ac__order-card {
+    background: #fff;
+    border: 0.1rem solid rgba(0,0,0,0.08);
+    border-radius: 1.2rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* shipment badge */
+  .ac__shipment {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: #f5f5f5;
+    padding: 1rem 1.4rem;
+    font-size: 1.25rem;
+    border-bottom: 0.1rem solid rgba(0,0,0,0.06);
+  }
+
+  .ac__shipment svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    flex-shrink: 0;
+    color: rgba(0,0,0,0.5);
+  }
+
+  .ac__shipment-text { line-height: 1.35; }
+  .ac__shipment-label { font-weight: 500; display: block; }
+  .ac__shipment-sub { color: rgba(0,0,0,0.45); font-size: 1.15rem; }
+
+  /* 2×2 image grid */
+  .ac__img-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.2rem;
+    background: #ebebeb;
+  }
+
+  .ac__img-cell {
+    aspect-ratio: 1;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .ac__img-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 0.8rem;
+  }
+
+  .ac__img-overflow {
+    aspect-ratio: 1;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: rgba(0,0,0,0.55);
+  }
+
+  /* order info footer */
+  .ac__order-info {
+    padding: 1.4rem 1.6rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+  }
+
+  .ac__order-count {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .ac__order-num {
+    font-size: 1.25rem;
+    color: rgba(0,0,0,0.45);
+    margin: 0 0 0.8rem;
+  }
+
+  .ac__order-total {
+    font-size: 1.4rem;
+    font-weight: 500;
+    margin: 0 0 1.2rem;
+  }
+
+  .ac__buy-again {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1rem;
+    background: #fff;
+    border: 0.1rem solid rgba(0,0,0,0.15);
+    border-radius: 0.6rem;
+    font-size: 1.35rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #000;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    margin-top: auto;
+  }
+
+  .ac__buy-again:hover { background: #f5f5f5; }
+
+  .ac__orders-empty {
+    font-size: 1.4rem;
+    color: rgba(0,0,0,0.45);
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  /* ── Profile cards ── */
+  .ac__card {
+    background: #fff;
+    border: 0.1rem solid rgba(0,0,0,0.08);
+    border-radius: 1.2rem;
+    padding: 2rem 2.4rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .ac__card-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .ac__card-name {
+    font-size: 1.45rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .ac__edit-link {
+    color: rgba(0,0,0,0.35);
+    text-decoration: none;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .ac__edit-link:hover { color: #000; }
+
+  .ac__edit-link svg {
+    width: 1.4rem;
+    height: 1.4rem;
+    display: block;
+  }
+
+  .ac__profile-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+  }
+
+  @media (max-width: 600px) {
+    .ac__profile-fields { grid-template-columns: 1fr; }
+  }
+
+  .ac__field-label {
+    font-size: 1.2rem;
+    color: rgba(0,0,0,0.45);
+    margin: 0 0 0.3rem;
+  }
+
+  .ac__field-value {
+    font-size: 1.35rem;
+    margin: 0;
+  }
+
+  /* addresses inside profile card */
+  .ac__addr-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .ac__addr-title {
+    font-size: 1.45rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .ac__addr-add {
+    font-size: 1.25rem;
+    color: #4055a5;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .ac__addr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    gap: 2.4rem;
+  }
+
+  .ac__addr-item { font-size: 1.35rem; line-height: 1.75; }
+
+  .ac__addr-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+  }
+
+  .ac__addr-item-tag {
+    font-size: 1.15rem;
+    color: rgba(0,0,0,0.4);
+  }
+
+  .ac__addr-item p { margin: 0; }
+
+  /* sign out */
+  .ac__signout-row {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+    margin-top: 0.8rem;
+  }
+
+  .ac__signout-btn {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    background: #fff;
+    border: 0.1rem solid rgba(0,0,0,0.15);
+    border-radius: 0.6rem;
+    font-size: 1.35rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .ac__signout-btn:hover { background: #f5f5f5; }
+</style>
+
+<div class="ac">
+
+  <!-- Tab nav -->
+  <nav class="ac__nav">
+    <div class="ac__tabs">
+      <button class="ac__tab is-active" data-panel="orders">{{ 'customer.orders.title' | t }}</button>
+      <button class="ac__tab" data-panel="profile">{{ 'customer.account.details' | t }}</button>
+    </div>
+    <a class="ac__avatar" href="{{ routes.account_logout_url }}" title="{{ 'customer.log_out' | t }}">
+      {{ customer.first_name | slice: 0 | upcase }}
     </a>
+  </nav>
+
+  <!-- ── ORDERS PANEL ── -->
+  <div class="ac__panel is-active" data-panel-id="orders">
+    <h1 class="ac__panel-title">{{ 'customer.orders.title' | t }}</h1>
+
+    {% paginate customer.orders by 20 %}
+      {%- if customer.orders.size > 0 -%}
+        <div class="ac__orders-grid">
+          {%- for order in customer.orders -%}
+            {%- assign total_qty = 0 -%}
+            {%- for item in order.line_items -%}
+              {%- assign total_qty = total_qty | plus: item.quantity -%}
+            {%- endfor -%}
+
+            <div class="ac__order-card">
+
+              <!-- Shipment badge -->
+              <div class="ac__shipment">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z"/>
+                  <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+                <div class="ac__shipment-text">
+                  {%- if order.fulfillment_status == 'fulfilled' -%}
+                    <span class="ac__shipment-label">Fulfilled</span>
+                    <span class="ac__shipment-sub">{{ order.created_at | time_tag: format: 'date' }}</span>
+                  {%- elsif order.fulfillment_status == 'partial' -%}
+                    <span class="ac__shipment-label">Partially fulfilled</span>
+                    <span class="ac__shipment-sub">View order for details</span>
+                  {%- else -%}
+                    <span class="ac__shipment-label">{{ order.fulfillment_status_label }}</span>
+                    <span class="ac__shipment-sub">{{ order.created_at | time_tag: format: 'date' }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+
+              <!-- Product image grid -->
+              <a href="{{ order.customer_url }}" style="text-decoration:none;">
+                <div class="ac__img-grid">
+                  {%- assign shown = 0 -%}
+                  {%- for item in order.line_items limit: 3 -%}
+                    <div class="ac__img-cell">
+                      {%- if item.image -%}
+                        <img
+                          src="{{ item.image | image_url: width: 200 }}"
+                          alt="{{ item.title | escape }}"
+                          loading="lazy"
+                        >
+                      {%- endif -%}
+                    </div>
+                    {%- assign shown = shown | plus: 1 -%}
+                  {%- endfor -%}
+
+                  {%- if order.line_items.size > 3 -%}
+                    <div class="ac__img-overflow">+{{ order.line_items.size | minus: 3 }}</div>
+                  {%- elsif shown == 1 -%}
+                    <div class="ac__img-cell"></div>
+                    <div class="ac__img-cell"></div>
+                    <div class="ac__img-cell"></div>
+                  {%- elsif shown == 2 -%}
+                    <div class="ac__img-cell"></div>
+                    <div class="ac__img-cell"></div>
+                  {%- elsif shown == 3 -%}
+                    <div class="ac__img-cell"></div>
+                  {%- endif -%}
+                </div>
+              </a>
+
+              <!-- Order info -->
+              <div class="ac__order-info">
+                <p class="ac__order-count">
+                  {{ total_qty }}
+                  {%- if total_qty == 1 %} item{%- else %} items{%- endif %}
+                </p>
+                <p class="ac__order-num">{{ 'customer.orders.order_number' | t }} {{ order.name }}</p>
+                <p class="ac__order-total">{{ order.total_price | money_with_currency }}</p>
+                <a class="ac__buy-again" href="{{ order.customer_url }}">View order</a>
+              </div>
+
+            </div>
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 and paginate.parts.size > 0 -%}
+          <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}" style="margin-top:3rem;">
+            <ul role="list">
+              {%- if paginate.previous -%}
+                <li><a href="{{ paginate.previous.url }}" aria-label="{{ 'general.pagination.previous' | t }}"><span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span></a></li>
+              {%- endif -%}
+              {%- for part in paginate.parts -%}
+                <li>
+                  {%- if part.is_link -%}<a href="{{ part.url }}">{{ part.title }}</a>
+                  {%- elsif part.title == paginate.current_page -%}<span aria-current="page">{{ part.title }}</span>
+                  {%- else -%}<span>{{ part.title }}</span>{%- endif -%}
+                </li>
+              {%- endfor -%}
+              {%- if paginate.next -%}
+                <li><a href="{{ paginate.next.url }}" aria-label="{{ 'general.pagination.next' | t }}"><span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span></a></li>
+              {%- endif -%}
+            </ul>
+          </nav>
+        {%- endif -%}
+
+      {%- else -%}
+        <p class="ac__orders-empty">{{ 'customer.orders.none' | t }}</p>
+      {%- endif -%}
+    {% endpaginate %}
   </div>
 
-  <div>
-    <div>
-      <h2>{{ 'customer.orders.title' | t }}</h2>
+  <!-- ── PROFILE PANEL ── -->
+  <div class="ac__panel" data-panel-id="profile">
+    <h1 class="ac__panel-title">Profile</h1>
 
-      {% paginate customer.orders by 20 %}
-        {%- if customer.orders.size > 0 -%}
-          <table role="table" class="order-history">
-            <caption class="visually-hidden">
-              {{ 'customer.orders.title' | t }}
-            </caption>
-            <thead role="rowgroup">
-              <tr role="row">
-                <th id="ColumnOrder" scope="col" role="columnheader">{{ 'customer.orders.order_number' | t }}</th>
-                <th id="ColumnDate" scope="col" role="columnheader">{{ 'customer.orders.date' | t }}</th>
-                <th id="ColumnPayment" scope="col" role="columnheader">{{ 'customer.orders.payment_status' | t }}</th>
-                <th id="ColumnFulfillment" scope="col" role="columnheader">
-                  {{ 'customer.orders.fulfillment_status' | t }}
-                </th>
-                <th id="ColumnTotal" scope="col" role="columnheader">{{ 'customer.orders.total' | t }}</th>
-              </tr>
-            </thead>
-            <tbody role="rowgroup">
-              {%- for order in customer.orders -%}
-                <tr role="row">
-                  <td
-                    id="RowOrder"
-                    role="cell"
-                    headers="ColumnOrder"
-                    data-label="{{ 'customer.orders.order_number' | t }}"
-                  >
-                    <a
-                      href="{{ order.customer_url }}"
-                      aria-label="{{ 'customer.orders.order_number_link' | t: number: order.name }}"
-                    >
-                      {{ order.name }}
-                    </a>
-                  </td>
-                  <td headers="RowOrder ColumnDate" role="cell" data-label="{{ 'customer.orders.date' | t }}">
-                    {{ order.created_at | time_tag: format: 'date' }}
-                  </td>
-                  <td
-                    headers="RowOrder ColumnPayment"
-                    role="cell"
-                    data-label="{{ 'customer.orders.payment_status' | t }}"
-                  >
-                    {{ order.financial_status_label }}
-                  </td>
-                  <td
-                    headers="RowOrder ColumnFulfillment"
-                    role="cell"
-                    data-label="{{ 'customer.orders.fulfillment_status' | t }}"
-                  >
-                    {{ order.fulfillment_status_label }}
-                  </td>
-                  <td headers="RowOrder ColumnTotal" role="cell" data-label="{{ 'customer.orders.total' | t }}">
-                    {{ order.total_net_amount | money_with_currency }}
-                  </td>
-                </tr>
-              {%- endfor -%}
-            </tbody>
-          </table>
-        {%- else -%}
-          <p>{{ 'customer.orders.none' | t }}</p>
-        {%- endif -%}
-
-        {%- if paginate.pages > 1 -%}
-          {%- if paginate.parts.size > 0 -%}
-            <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
-              <ul role="list">
-                {%- if paginate.previous -%}
-                  <li>
-                    <a href="{{ paginate.previous.url }}" aria-label="{{ 'general.pagination.previous' | t }}">
-                      <span class="svg-wrapper">
-                        {{- 'icon-caret.svg' | inline_asset_content -}}
-                      </span>
-                    </a>
-                  </li>
-                {%- endif -%}
-
-                {%- for part in paginate.parts -%}
-                  <li>
-                    {%- if part.is_link -%}
-                      <a href="{{ part.url }}" aria-label="{{ 'general.pagination.page' | t: number: part.title }}">
-                        {{- part.title -}}
-                      </a>
-                    {%- else -%}
-                      {%- if part.title == paginate.current_page -%}
-                        <span aria-current="page" aria-label="{{ 'general.pagination.page' | t: number: part.title }}">
-                          {{- part.title -}}
-                        </span>
-                      {%- else -%}
-                        <span>{{ part.title }}</span>
-                      {%- endif -%}
-                    {%- endif -%}
-                  </li>
-                {%- endfor -%}
-
-                {%- if paginate.next -%}
-                  <li>
-                    <a href="{{ paginate.next.url }}" aria-label="{{ 'general.pagination.next' | t }}">
-                      <span class="svg-wrapper">
-                        {{- 'icon-caret.svg' | inline_asset_content -}}
-                      </span>
-                    </a>
-                  </li>
-                {%- endif -%}
-              </ul>
-            </nav>
-          {%- endif -%}
-        {%- endif -%}
-      {% endpaginate %}
+    <!-- Personal info card -->
+    <div class="ac__card">
+      <div class="ac__card-name-row">
+        <p class="ac__card-name">{{ customer.first_name }} {{ customer.last_name }}</p>
+        <a class="ac__edit-link" href="{{ routes.account_url }}" title="Edit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </a>
+      </div>
+      <div class="ac__profile-fields">
+        <div>
+          <p class="ac__field-label">Email</p>
+          <p class="ac__field-value">{{ customer.email }}</p>
+        </div>
+        <div>
+          <p class="ac__field-label">Phone number</p>
+          <p class="ac__field-value">{{ customer.phone | default: '—' }}</p>
+        </div>
+      </div>
     </div>
 
-    <div>
-      <h2>{{ 'customer.account.details' | t }}</h2>
-
-      {{ customer.default_address | format_address }}
-
-      <a href="{{ routes.account_addresses_url }}">
-        {{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})
-      </a>
+    <!-- Addresses card -->
+    <div class="ac__card">
+      <div class="ac__addr-header">
+        <h2 class="ac__addr-title">{{ 'customer.account.view_addresses' | t | split: ' ' | first }}</h2>
+        <a class="ac__addr-add" href="{{ routes.account_addresses_url }}">+ Add</a>
+      </div>
+      <div class="ac__addr-grid">
+        {%- for address in customer.addresses -%}
+          <div class="ac__addr-item">
+            <div class="ac__addr-item-header">
+              {%- if address == customer.default_address -%}
+                <span class="ac__addr-item-tag">Default address</span>
+              {%- else -%}
+                <span class="ac__addr-item-tag">{{ address.first_name }} {{ address.last_name }}</span>
+              {%- endif -%}
+              <a class="ac__edit-link" href="{{ routes.account_addresses_url }}" title="Edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </a>
+            </div>
+            {{ address | format_address }}
+          </div>
+        {%- endfor -%}
+      </div>
     </div>
+
+    <!-- Sign out -->
+    <div class="ac__signout-row">
+      <a class="ac__signout-btn" href="{{ routes.account_logout_url }}">Sign out</a>
+    </div>
+
   </div>
 </div>
+
+<script>
+  (function () {
+    var tabs = document.querySelectorAll('.ac__tab');
+    var panels = document.querySelectorAll('.ac__panel');
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var target = tab.dataset.panel;
+
+        tabs.forEach(function (t) { t.classList.remove('is-active'); });
+        panels.forEach(function (p) { p.classList.remove('is-active'); });
+
+        tab.classList.add('is-active');
+        document.querySelector('[data-panel-id="' + target + '"]').classList.add('is-active');
+      });
+    });
+  })();
+</script>
