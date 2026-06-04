@@ -313,12 +313,34 @@
       "submit": "Set password",
       "missing_token": "Invalid activation token"
     },
+    "log_out": "Log out",
     "account": {
+      "title": "Account",
       "greeting": "Welcome, {{ name }}",
       "addresses": "Addresses",
       "orders": "Orders",
       "logout": "Log out",
-      "not_logged_in": "You are not logged in"
+      "not_logged_in": "You are not logged in",
+      "details": "Account details",
+      "view_addresses": "View addresses"
+    },
+    "orders": {
+      "title": "Orders",
+      "none": "You haven't placed any orders yet.",
+      "order_number": "Order",
+      "order_number_link": "Order {{ number }}",
+      "date": "Date",
+      "payment_status": "Payment status",
+      "fulfillment_status": "Fulfillment status",
+      "total": "Total"
+    }
+  },
+  "general": {
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous page",
+      "next": "Next page",
+      "page": "Page {{ number }}"
     }
   }
 }
