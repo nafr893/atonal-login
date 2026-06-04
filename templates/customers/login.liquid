@@ -1,0 +1,154 @@
+{% layout 'theme' %}
+
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+
+<style>
+  .login-page {
+    padding-top: 6rem;
+    padding-bottom: 8rem;
+  }
+
+  .login-page .field {
+    margin-top: 1.6rem;
+  }
+
+  .login-page .field__input {
+    padding-top: 2rem;
+    padding-bottom: 0.8rem;
+    width: 100%;
+  }
+
+  .login-page .field__label {
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.4rem;
+    transition: top 0.15s ease, font-size 0.15s ease, transform 0.15s ease;
+  }
+
+  .login-page .field__input:focus ~ .field__label,
+  .login-page .field__input:not(:placeholder-shown) ~ .field__label,
+  .login-page .field__input:-webkit-autofill ~ .field__label {
+    top: 0.7rem;
+    font-size: 1.1rem;
+    transform: none;
+  }
+
+  .login-page .form__message {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: rgb(var(--color-error));
+    font-size: 1.4rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .login-page .form__message .svg-wrapper {
+    width: 1.6rem;
+    flex-shrink: 0;
+  }
+
+  .login-page .form-errors {
+    background: rgba(var(--color-error), 0.06);
+    border-radius: var(--style-border-radius-inputs);
+    padding: 1.2rem 1.6rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .login-page .form-errors ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1.4rem;
+    color: rgb(var(--color-error));
+  }
+
+  .login-page button[type="submit"] {
+    width: 100%;
+    margin-top: 2.4rem;
+    margin-bottom: 0;
+  }
+
+  .login-page .login-links {
+    margin-top: 1.6rem;
+    font-size: 1.4rem;
+    color: rgba(var(--color-foreground), 0.65);
+  }
+
+  .login-page .login-links a {
+    color: rgb(var(--color-foreground));
+    text-underline-offset: 0.2em;
+  }
+</style>
+
+<div class="customer login login-page">
+  <h1>{{ 'customer.login.title' | t }}</h1>
+
+  {% if customer %}
+    <p>{{ 'customer.login.already_logged_in' | t }}</p>
+    <a href="{{ routes.account_url }}">{{ 'customer.account.title' | t }}</a>
+  {% else %}
+    {%- form 'customer_login' -%}
+      {%- if form.errors -%}
+        <div class="form-errors" tabindex="-1" autofocus>
+          <ul>
+            {%- for field in form.errors -%}
+              <li>
+                {%- if field == 'form' -%}
+                  {{ form.errors.messages[field] }}
+                {%- else -%}
+                  {{ form.errors.translated_fields[field] | capitalize }}
+                  {{ form.errors.messages[field] }}
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="field">
+        <input
+          class="field__input"
+          id="CustomerEmail"
+          name="customer[email]"
+          type="email"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="email"
+          required
+          placeholder=" "
+          value="{{ form.email }}"
+        >
+        <label class="field__label" for="CustomerEmail">
+          {{ 'customer.login.email' | t }}
+        </label>
+      </div>
+
+      <div class="field">
+        <input
+          class="field__input"
+          id="CustomerPassword"
+          name="customer[password]"
+          type="password"
+          autocomplete="current-password"
+          required
+          placeholder=" "
+        >
+        <label class="field__label" for="CustomerPassword">
+          {{ 'customer.login.password' | t }}
+        </label>
+      </div>
+
+      <button type="submit">
+        {{ 'customer.login.submit' | t }}
+      </button>
+
+      <p class="login-links">
+        <a href="{{ routes.password_recovery_url }}">{{ 'customer.login.forgot_password' | t }}</a>
+        &nbsp;&bull;&nbsp;
+        <a href="{{ routes.register_url }}">{{ 'customer.login.create_account' | t }}</a>
+      </p>
+    {%- endform -%}
+  {% endif %}
+</div>

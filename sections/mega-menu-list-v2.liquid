@@ -1,0 +1,247 @@
+{% comment %}
+  Mega Menu List V2
+  - Fixed layout, editable content (product list + promo images)
+  - Designed for Horizon or OS2.0 themes
+{% endcomment %}
+
+<div class="mega-menu-list-v2">
+  <div class="mega-menu-list-v2__grid">
+    
+    <!-- Left Column: Shop by Hat -->
+    <div class="mega-menu-list-v2__hats">
+      <h3 class="mega-menu-list-v2__heading">{{ section.settings.product_menu_title }}</h3>
+      <ul class="mega-menu-list-v2__products">
+        {% for product in section.settings.hat_products %}
+          <li class="mega-menu-list-v2__product">
+            <a href="{{ product.url }}" class="menu-product-link">
+              <img src="{{ product.featured_image | image_url: width: 80 }}" alt="{{ product.title }}">
+              <span class="menu-product-title">{{ product.title }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Right Column: Promo Banners -->
+    <div class="mega-menu-list-v2__promos">
+      <div class="mega-menu-list-v2__promo">
+        {% if section.settings.left_image %}
+          
+          <a href="{{ section.settings.left_link }}">
+           <div class="menu-image-wrapper">
+              <img src="{{ section.settings.left_image | image_url: width: 600 }}" alt="Promo Left">
+              <span class="mega-menu-list-v2__promo-text">{{ section.settings.left_text }}</span>
+                        <div class="menu-image-overlay"></div>
+</div>
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="mega-menu-list-v2__promo">
+        {% if section.settings.right_image %}
+          <a href="{{ section.settings.right_link }}">
+           <div class="menu-image-wrapper">
+
+              <img src="{{ section.settings.right_image | image_url: width: 600 }}" alt="Promo Right">
+              <span class="mega-menu-list-v2__promo-text">{{ section.settings.right_text }}</span>
+                       <div class="menu-image-overlay"></div>
+</div>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Mega Menu List V2",
+  "settings": [
+    {
+      "type": "product_list",
+      "id": "hat_products",
+      "label": "Select hats to display",
+      "limit": 12
+    },
+    {
+      "type": "image_picker",
+      "id": "left_image",
+      "label": "Left Promo Image"
+    },
+    {
+      "type": "text",
+      "id": "left_text",
+      "label": "Left Promo Text",
+      "default": "LATEST DROPS"
+    },
+    {
+      "type": "url",
+      "id": "left_link",
+      "label": "Left Promo Link"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_image",
+      "label": "Right Promo Image"
+    },
+    {
+      "type": "text",
+      "id": "right_text",
+      "label": "Right Promo Text",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "right_link",
+      "label": "Right Promo Link"
+    },
+    {
+    "type": "text", 
+    "id": "product_menu_title",
+    "label": "Product Menu Title",
+    "default": "Shop By Hat"
+    },
+  ],
+  "presets": [
+    {
+      "name": "Mega Menu List V2",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+{% style %}
+.mega-menu-list-v2 {
+  padding-top: 20px;
+  padding-left: 40px; 
+  padding-right: 40px; 
+}
+
+.mega-menu-list-v2__grid {
+  display: flex;
+  gap: 40px;
+  justify-content: space-between;
+}
+
+.mega-menu-list-v2__hats {
+  flex: 1;
+}
+
+.mega-menu-list-v2__products {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+display: grid;
+grid-template-columns: 1fr 1fr;
+}
+
+
+span.menu-product-title {
+  place-self: center
+}
+
+a.menu-product-link {
+  width: 100%;
+display: flex;
+flex-direction: row;
+
+}
+
+.mega-menu-list-v2__product {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+box-sizing: border-box; 
+border-left: 3px solid rgba(0, 0, 0, 0);
+width: 22dvw;
+height: 12dvh;
+padding-right: .5rem; 
+padding-left: .5rem; 
+}
+
+
+.mega-menu-list-v2__product:hover {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+width: 22dvw;
+height: 12dvh;
+background: #F5F5F5; 
+border-left: 3px solid #2f5cac;
+box-sizing: border-box; 
+}
+
+.mega-menu-list-v2__product img {
+  width: 7dvw;
+  height: auto;
+  margin-right: 12px;
+  padding: .5rem;
+}
+
+.mega-menu-list-v2__promos {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex: 1;
+}
+
+
+
+.mega-menu-list-v2__promo img {
+  width: 23dvw;
+  height: 100%; 
+  display: block;
+  object-fit: cover; 
+}
+
+div.menu-image-wrapper {
+  width: 100%;  
+  height: 100%; 
+  display: block;
+  position: relative;
+}
+
+.mega-menu-list-v2__promo img:hover {
+
+}
+
+div.menu-image-overlay {
+  width: 100%; 
+  height: 100%; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.0) 100%);
+  z-index: 3;
+}
+
+div.mega-menu-list-v2__promo:hover {
+div.menu-image-overlay {
+  width: 100%; 
+  height: 100%; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 100%);
+  z-index: 3;
+  
+}
+}
+
+.mega-menu-list-v2__promo-text {
+  position: relative;
+  z-index: 4;
+  bottom: 60px;
+  left: 20px; 
+  place-self: center; 
+  color: white;
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+
+{% endstyle %}

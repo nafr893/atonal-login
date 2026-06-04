@@ -1,0 +1,230 @@
+<!doctype html>
+<html
+  class="no-js{% if request.design_mode %} shopify-design-mode{% endif %}"
+  lang="{{ request.locale.iso_code }}"
+>
+  <head>
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "so4uvvyoyy");
+</script>
+
+
+    {%- render 'stylesheets' -%}
+
+    {%- if settings.favicon != blank -%}
+      <link
+        rel="icon"
+        type="image/png"
+        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+      >
+    {%- endif -%}
+
+
+
+    {% comment %} News Slider Library Start {% endcomment %}
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    >
+    {{ 'atonal.css' | asset_url | stylesheet_tag }}
+
+    {% comment %} News Slider Library end {% endcomment %}
+
+
+    {% comment %} This a way to wait for main content to load when navigating to a new page so that the view transitions can work consistently {% endcomment %}
+    <link
+      rel="expect"
+      href="#MainContent"
+      blocking="render"
+      id="view-transition-render-blocker"
+    >
+
+    {%- render 'meta-tags' -%}
+    {%- render 'fonts' -%}
+    {%- render 'scripts' -%}
+    {%- render 'theme-styles-variables' -%}
+    {%- render 'color-schemes' -%}
+
+    {% if request.design_mode %}
+      {%- render 'theme-editor' -%}
+    {% endif %}
+
+    {{ content_for_header }}
+  {% render 'wsg-custom' %}
+</head>
+
+
+
+  <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
+    {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
+   
+  
+    
+    <div id="header-group">
+      {% sections 'header-group' %}
+
+    </div>
+
+
+  <div class="nav-item-wrapper relative">
+  <div class="nav-item nav-item--shop"> <a href="https://atonalheadwear.com/collections/all">SHOP</a></div> <!-- The hover trigger -->
+  <div id="mega-menu-list-v2" class="mega-menu-list-v2 hidden">
+    {% section 'mega-menu-list-v2' %}
+  
+</div>  
+</div>
+
+
+    <main
+      id="MainContent"
+      class="content-for-layout"
+      role="main"
+      data-page-transition-enabled="{{ settings.page_transition_enabled }}"
+      data-product-transition="{{ settings.transition_to_main_product }}"
+      data-template="{{ template }}"
+    >
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {% render 'search-modal' %}
+
+    {% # theme-check-disable ParserBlockingScript %}
+    <script src="{{ 'critical.js' | asset_url }}"></script>
+    {% # theme-check-enable ParserBlockingScript %}
+
+    {% if settings.quick_add or settings.mobile_quick_add %}
+      {% render 'quick-add-modal' %}
+    {% endif %}
+
+<!-- Email Signup Stock Script --> 
+
+    <script>
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.restock-toggle-btn');
+    if (!btn) return;
+
+    const targetId = btn.getAttribute('data-target');
+    const form = document.getElementById(targetId);
+    
+    if (form) {
+      form.style.display = 'block';
+      btn.style.display = 'none';
+    }
+  });
+</script>
+
+<!-- End Email Signup Stock Script --> 
+
+
+  </body>
+
+
+  {% comment %} Custom js {% endcomment %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js" defer="defer"></script>
+  <script type="text/javascript">
+    jQuery(document).ready(function(){
+      jQuery('.blogs-fade-slider').slick({
+        dots: true,
+        slidesToScroll: 1,
+        infinite: true,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        autoplay: true,
+        autoplaySpeed: 3000,
+        arrows: false,
+        pauseOnHover: false
+      });
+    });
+  </script>
+  <script>
+    window.addEventListener('load', function() {
+      document.querySelector('.news-blogs.our').style.visibility = 'visible';
+    });
+  </script>
+  {% comment %} Custom Js end {% endcomment %}
+
+
+<script>
+  // Add or remove 'scrolled' class on body
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 10) {
+      document.body.classList.add('scrolled');
+    } else {
+      document.body.classList.remove('scrolled');
+    }
+  });
+
+  // Position the mega menu under the nav item using FIXED positioning
+  function positionMegaMenu() {
+    const navItem = document.querySelector('.nav-item--shop');
+    const megaMenu = document.querySelector('#mega-menu-list-v2-container');
+
+    if (!navItem || !megaMenu) return;
+
+    // Get bounding box relative to the viewport
+    const navRect = navItem.getBoundingClientRect();
+
+    // Use fixed positioning: navRect.top gives us viewport-based Y position
+    megaMenu.style.position = 'fixed';
+    megaMenu.style.top = `${navRect.bottom}px`;
+    megaMenu.style.left = `${navRect.left}px`;
+    megaMenu.style.width = `${navRect.width}px`;
+    megaMenu.style.zIndex = '100';
+  }
+
+  // Hover logic to show/hide the menu
+  function setupMegaMenuHover() {
+    const navItem = document.querySelector('.nav-item--shop');
+    const megaMenu = document.querySelector('#mega-menu-list-v2-container');
+
+    if (!navItem || !megaMenu) return;
+
+    navItem.addEventListener('mouseenter', () => {
+      positionMegaMenu(); // Recalculate on open
+      megaMenu.classList.remove('hidden');
+    });
+
+    navItem.addEventListener('mouseleave', () => {
+      setTimeout(() => {
+        if (!megaMenu.matches(':hover')) {
+          megaMenu.classList.add('hidden');
+        }
+      }, 150);
+    });
+
+    megaMenu.addEventListener('mouseenter', () => {
+      megaMenu.classList.remove('hidden');
+    });
+
+    megaMenu.addEventListener('mouseleave', () => {
+      megaMenu.classList.add('hidden');
+    });
+  }
+
+  // Initialize on page load
+  window.addEventListener('load', () => {
+    setupMegaMenuHover();
+    positionMegaMenu();
+  });
+
+  // Recalculate on resize or scroll
+  window.addEventListener('resize', positionMegaMenu);
+  window.addEventListener('scroll', positionMegaMenu);
+</script>
+
+{%- comment -%} Include legacy account CSS overrides {%- endcomment -%}
+<link rel="stylesheet" href="{{ 'customers.css' | asset_url }}" />
+
+</html>
