@@ -285,7 +285,7 @@
   },
   "customer": {
     "login": {
-      "title": "Log in",
+      "title": "Wholesale Login",
       "email": "Email",
       "password": "Password",
       "submit": "Log in",
