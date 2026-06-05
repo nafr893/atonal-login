@@ -64,34 +64,11 @@
   .ac__panel { display: none; }
   .ac__panel.is-active { display: block; }
 
-  .ac__panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-  }
-
   .ac__panel-title {
     font-size: 1.8rem;
     font-weight: 600;
-    margin: 0;
+    margin: 0 0 2rem;
   }
-
-  .ac__bulk-btn {
-    display: inline-block;
-    padding: 0.8rem 1.6rem;
-    background: #000;
-    color: #fff;
-    font-size: 1.25rem;
-    font-weight: 600;
-    font-family: inherit;
-    text-decoration: none;
-    border-radius: 0.6rem;
-    transition: background 0.15s ease;
-    white-space: nowrap;
-  }
-
-  .ac__bulk-btn:hover { background: #333; }
 
   /* ── Orders grid ── */
   .ac__orders-grid {
@@ -355,6 +332,7 @@
     <div class="ac__tabs">
       <button class="ac__tab is-active" data-panel="orders">Orders</button>
       <button class="ac__tab" data-panel="profile">Profile</button>
+      <a class="ac__tab" href="https://atonal.co/pages/ws-quick-order-form">Bulk Order</a>
     </div>
     <a class="ac__avatar" href="{{ routes.account_logout_url }}" title="Log out">
       {{ customer.first_name | slice: 0 | upcase }}
@@ -363,10 +341,7 @@
 
   <!-- ── ORDERS PANEL ── -->
   <div class="ac__panel is-active" data-panel-id="orders">
-    <div class="ac__panel-header">
-      <h1 class="ac__panel-title">Orders</h1>
-      <a class="ac__bulk-btn" href="https://atonal.co/pages/ws-quick-order-form">Bulk Order</a>
-    </div>
+    <h1 class="ac__panel-title">Orders</h1>
 
     {% paginate customer.orders by 20 %}
       {%- if customer.orders.size > 0 -%}
