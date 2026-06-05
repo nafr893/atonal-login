@@ -64,11 +64,34 @@
   .ac__panel { display: none; }
   .ac__panel.is-active { display: block; }
 
+  .ac__panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+  }
+
   .ac__panel-title {
     font-size: 1.8rem;
     font-weight: 600;
-    margin: 0 0 2rem;
+    margin: 0;
   }
+
+  .ac__bulk-btn {
+    display: inline-block;
+    padding: 0.8rem 1.6rem;
+    background: #000;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    border-radius: 0.6rem;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .ac__bulk-btn:hover { background: #333; }
 
   /* ── Orders grid ── */
   .ac__orders-grid {
@@ -330,17 +353,20 @@
   <!-- Tab nav -->
   <nav class="ac__nav">
     <div class="ac__tabs">
-      <button class="ac__tab is-active" data-panel="orders">{{ 'customer.orders.title' | t }}</button>
-      <button class="ac__tab" data-panel="profile">{{ 'customer.account.details' | t }}</button>
+      <button class="ac__tab is-active" data-panel="orders">Orders</button>
+      <button class="ac__tab" data-panel="profile">Profile</button>
     </div>
-    <a class="ac__avatar" href="{{ routes.account_logout_url }}" title="{{ 'customer.log_out' | t }}">
+    <a class="ac__avatar" href="{{ routes.account_logout_url }}" title="Log out">
       {{ customer.first_name | slice: 0 | upcase }}
     </a>
   </nav>
 
   <!-- ── ORDERS PANEL ── -->
   <div class="ac__panel is-active" data-panel-id="orders">
-    <h1 class="ac__panel-title">{{ 'customer.orders.title' | t }}</h1>
+    <div class="ac__panel-header">
+      <h1 class="ac__panel-title">Orders</h1>
+      <a class="ac__bulk-btn" href="https://atonal.co/pages/ws-quick-order-form">Bulk Order</a>
+    </div>
 
     {% paginate customer.orders by 20 %}
       {%- if customer.orders.size > 0 -%}
@@ -411,7 +437,7 @@
                   {{ total_qty }}
                   {%- if total_qty == 1 %} item{%- else %} items{%- endif %}
                 </p>
-                <p class="ac__order-num">{{ 'customer.orders.order_number' | t }} {{ order.name }}</p>
+                <p class="ac__order-num">Order {{ order.name }}</p>
                 <p class="ac__order-total">{{ order.total_price | money_with_currency }}</p>
                 <a class="ac__buy-again" href="{{ order.customer_url }}">View order</a>
               </div>
@@ -421,10 +447,10 @@
         </div>
 
         {%- if paginate.pages > 1 and paginate.parts.size > 0 -%}
-          <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}" style="margin-top:3rem;">
+          <nav class="pagination" role="navigation" aria-label="Pagination" style="margin-top:3rem;">
             <ul role="list">
               {%- if paginate.previous -%}
-                <li><a href="{{ paginate.previous.url }}" aria-label="{{ 'general.pagination.previous' | t }}"><span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span></a></li>
+                <li><a href="{{ paginate.previous.url }}" aria-label="Previous page"><span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span></a></li>
               {%- endif -%}
               {%- for part in paginate.parts -%}
                 <li>
@@ -434,14 +460,14 @@
                 </li>
               {%- endfor -%}
               {%- if paginate.next -%}
-                <li><a href="{{ paginate.next.url }}" aria-label="{{ 'general.pagination.next' | t }}"><span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span></a></li>
+                <li><a href="{{ paginate.next.url }}" aria-label="Next page"><span class="svg-wrapper">{{- 'icon-caret.svg' | inline_asset_content -}}</span></a></li>
               {%- endif -%}
             </ul>
           </nav>
         {%- endif -%}
 
       {%- else -%}
-        <p class="ac__orders-empty">{{ 'customer.orders.none' | t }}</p>
+        <p class="ac__orders-empty">You haven't placed any orders yet.</p>
       {%- endif -%}
     {% endpaginate %}
   </div>
@@ -476,7 +502,7 @@
     <!-- Addresses card -->
     <div class="ac__card">
       <div class="ac__addr-header">
-        <h2 class="ac__addr-title">{{ 'customer.account.view_addresses' | t | split: ' ' | first }}</h2>
+        <h2 class="ac__addr-title">Addresses</h2>
         <a class="ac__addr-add" href="{{ routes.account_addresses_url }}">+ Add</a>
       </div>
       <div class="ac__addr-grid">
