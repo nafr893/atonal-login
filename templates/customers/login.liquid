@@ -90,14 +90,14 @@
 </style>
 
 <div class="login-page">
-  <h1>{{ 'customer.login.title' | t }}</h1>
+  <h1>Wholesale Login</h1>
 
   {% if customer %}
-    <p>{{ 'customer.login.already_logged_in' | t }}</p>
-    <a href="{{ routes.account_url }}" class="button">{{ 'customer.account.title' | t }}</a>
+    <p>You are already logged in.</p>
+    <a href="{{ routes.account_url }}" class="button">Account</a>
   {% else %}
     <p class="login-page__subtitle">
-      {{ 'customer.login.create_account' | t }}? <a href="{{ routes.register_url }}">{{ 'customer.register.title' | t }}</a>
+      Create account? <a href="{{ routes.register_url }}">Create account</a>
     </p>
 
     {%- form 'customer_login' -%}
@@ -119,7 +119,7 @@
       {%- endif -%}
 
       <div class="login-page__field">
-        <label class="login-page__label" for="CustomerEmail">{{ 'customer.login.email' | t }}</label>
+        <label class="login-page__label" for="CustomerEmail">Email</label>
         <input
           class="login-page__input"
           id="CustomerEmail"
@@ -128,31 +128,31 @@
           autocorrect="off"
           autocapitalize="off"
           autocomplete="email"
-          placeholder="{{ 'customer.login.email' | t }}"
+          placeholder="Email"
           value="{{ form.email }}"
           required
         >
       </div>
 
       <div class="login-page__field">
-        <label class="login-page__label" for="CustomerPassword">{{ 'customer.login.password' | t }}</label>
+        <label class="login-page__label" for="CustomerPassword">Password</label>
         <input
           class="login-page__input"
           id="CustomerPassword"
           name="customer[password]"
           type="password"
           autocomplete="current-password"
-          placeholder="{{ 'customer.login.password' | t }}"
+          placeholder="Password"
           required
         >
       </div>
 
       <button type="submit" class="button login-page__submit">
-        {{ 'customer.login.submit' | t }}
+        Log in
       </button>
 
       <p class="login-page__links">
-        <a href="{{ routes.password_recovery_url }}">{{ 'customer.login.forgot_password' | t }}</a>
+        <a href="{{ routes.password_recovery_url }}">Forgot your password?</a>
       </p>
     {%- endform -%}
   {% endif %}
