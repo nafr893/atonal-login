@@ -1820,34 +1820,10 @@
         "default": "Pairs well with"
       },
       {
-        "type": "product",
-        "id": "cart_upsell_product_1",
-        "label": "Product 1"
-      },
-      {
-        "type": "product",
-        "id": "cart_upsell_product_2",
-        "label": "Product 2"
-      },
-      {
-        "type": "product",
-        "id": "cart_upsell_product_3",
-        "label": "Product 3"
-      },
-      {
-        "type": "product",
-        "id": "cart_upsell_product_4",
-        "label": "Product 4"
-      },
-      {
-        "type": "product",
-        "id": "cart_upsell_product_5",
-        "label": "Product 5"
-      },
-      {
-        "type": "product",
-        "id": "cart_upsell_product_6",
-        "label": "Product 6"
+        "type": "collection",
+        "id": "cart_upsell_collection",
+        "label": "Recommended collection",
+        "info": "Create a collection in Shopify admin and add the products you want to show here."
       }
     ]
   },

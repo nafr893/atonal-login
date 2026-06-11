@@ -108,21 +108,8 @@
             <div
               class="cart-drawer__summary"
             >
-              {%- assign _up1 = all_products[settings.cart_upsell_product_1] -%}
-              {%- assign _up2 = all_products[settings.cart_upsell_product_2] -%}
-              {%- assign _up3 = all_products[settings.cart_upsell_product_3] -%}
-              {%- assign _up4 = all_products[settings.cart_upsell_product_4] -%}
-              {%- assign _up5 = all_products[settings.cart_upsell_product_5] -%}
-              {%- assign _up6 = all_products[settings.cart_upsell_product_6] -%}
-              {%- assign upsell_products = '' | split: '' -%}
-              {%- if _up1.id -%}{%- assign upsell_products = upsell_products | push: _up1 -%}{%- endif -%}
-              {%- if _up2.id -%}{%- assign upsell_products = upsell_products | push: _up2 -%}{%- endif -%}
-              {%- if _up3.id -%}{%- assign upsell_products = upsell_products | push: _up3 -%}{%- endif -%}
-              {%- if _up4.id -%}{%- assign upsell_products = upsell_products | push: _up4 -%}{%- endif -%}
-              {%- if _up5.id -%}{%- assign upsell_products = upsell_products | push: _up5 -%}{%- endif -%}
-              {%- if _up6.id -%}{%- assign upsell_products = upsell_products | push: _up6 -%}{%- endif -%}
-
-              {%- if upsell_products.size > 0 -%}
+              {%- assign upsell_col = collections[settings.cart_upsell_collection] -%}
+              {%- if upsell_col.products_count > 0 -%}
                 {%- assign upsell_heading = settings.cart_upsell_heading | default: 'Pairs well with' -%}
                 <div class="cart-upsell">
                   <div class="cart-upsell__header">
@@ -134,7 +121,7 @@
                   </div>
                   <div class="cart-upsell__track-wrapper">
                     <div class="cart-upsell__track">
-                      {%- for product in upsell_products -%}
+                      {%- for product in upsell_col.products limit: 6 -%}
                         <div class="cart-upsell__slide">
                           <a href="{{ product.url }}" class="cart-upsell__img-wrap">
                             {%- if product.featured_image -%}
