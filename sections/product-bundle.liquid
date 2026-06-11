@@ -7,6 +7,9 @@
   endif
 
   assign bundle_available = true
+  assign bundle_ids = ''
+  assign bundle_qtys = ''
+
   if bundle_variants
     for v in bundle_variants
       assign qty = bundle_quantities[forloop.index0] | default: 1
@@ -16,6 +19,12 @@
       if v.inventory_management != blank and v.inventory_quantity < qty
         assign bundle_available = false
       endif
+      assign bundle_ids = bundle_ids | append: v.id
+      assign bundle_qtys = bundle_qtys | append: qty
+      unless forloop.last
+        assign bundle_ids = bundle_ids | append: ','
+        assign bundle_qtys = bundle_qtys | append: ','
+      endunless
     endfor
   endif
 -%}
@@ -60,6 +69,9 @@
           <ul class="bundle-page__component-list">
             {%- for v in bundle_variants -%}
               {%- assign qty = bundle_quantities[forloop.index0] | default: 1 -%}
+              {%- assign component_sold_out = false -%}
+              {%- unless v.available -%}{%- assign component_sold_out = true -%}{%- endunless -%}
+              {%- if v.inventory_management != blank and v.inventory_quantity < qty -%}{%- assign component_sold_out = true -%}{%- endif -%}
               <li class="bundle-page__component-item">
                 {%- assign thumb = v.image | default: v.product.featured_image -%}
                 {%- if thumb -%}
@@ -79,13 +91,6 @@
                   {%- unless v.title == 'Default Title' -%}
                     <span class="bundle-page__component-variant">{{ v.title }}</span>
                   {%- endunless -%}
-                  {%- assign component_sold_out = false -%}
-                  {%- unless v.available -%}
-                    {%- assign component_sold_out = true -%}
-                  {%- endunless -%}
-                  {%- if v.inventory_management != blank and v.inventory_quantity < qty -%}
-                    {%- assign component_sold_out = true -%}
-                  {%- endif -%}
                   {%- if component_sold_out -%}
                     <span class="bundle-page__component-soldout">Sold out</span>
                   {%- endif -%}
@@ -94,15 +99,23 @@
             {%- endfor -%}
           </ul>
         </div>
+      {%- else -%}
+        <p class="bundle-page__no-components">
+          ⚠️ No components found. Make sure the <strong>component_variants</strong> metafield is filled in on this product.
+        </p>
       {%- endif -%}
 
       <button
         class="button bundle-page__add-btn"
         id="bundle-add-to-cart"
         type="button"
-        {%- unless bundle_available and bundle_variants and bundle_variants.size > 0 -%}disabled{%- endunless -%}
+        data-ids="{{ bundle_ids }}"
+        data-qtys="{{ bundle_qtys }}"
+        {%- unless bundle_available and bundle_ids != '' -%}disabled{%- endunless -%}
       >
-        {%- if bundle_available -%}
+        {%- if bundle_ids == '' -%}
+          Not configured
+        {%- elsif bundle_available -%}
           {{ section.settings.button_text }}
         {%- else -%}
           Sold Out
@@ -117,18 +130,24 @@
 
 <script>
 (function () {
-  var bundleItems = [
-    {%- for v in bundle_variants -%}
-      {%- assign qty = bundle_quantities[forloop.index0] | default: 1 -%}
-      { id: {{ v.id }}, quantity: {{ qty }} }{%- unless forloop.last -%},{%- endunless -%}
-    {%- endfor -%}
-  ];
-
   var btn = document.getElementById('bundle-add-to-cart');
   var feedback = document.getElementById('bundle-feedback');
-  var defaultLabel = btn ? btn.textContent.trim() : '';
+  if (!btn) return;
 
-  if (!btn || !bundleItems.length) return;
+  var defaultLabel = btn.textContent.trim();
+  var idsRaw = btn.dataset.ids || '';
+  var qtysRaw = btn.dataset.qtys || '';
+
+  if (!idsRaw) return;
+
+  var ids = idsRaw.split(',').map(function (s) { return parseInt(s.trim(), 10); }).filter(Boolean);
+  var qtys = qtysRaw.split(',').map(function (s) { return parseInt(s.trim(), 10) || 1; });
+
+  var bundleItems = ids.map(function (id, i) {
+    return { id: id, quantity: qtys[i] || 1 };
+  });
+
+  if (!bundleItems.length) return;
 
   btn.addEventListener('click', function () {
     btn.disabled = true;
@@ -136,15 +155,13 @@
     feedback.textContent = '';
     feedback.className = 'bundle-page__feedback';
 
-    var items = bundleItems;
-
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: items })
+      body: JSON.stringify({ items: bundleItems })
     })
       .then(function (r) {
-        if (!r.ok) return r.json().then(function (d) { throw new Error(d.description || 'Error'); });
+        if (!r.ok) return r.json().then(function (d) { throw new Error(d.description || 'Error adding to cart'); });
         return r.json();
       })
       .then(function () {
@@ -152,7 +169,6 @@
         feedback.textContent = 'Bundle added to your cart.';
         feedback.className = 'bundle-page__feedback bundle-page__feedback--success';
 
-        // Open cart drawer (Horizon)
         var drawer = document.querySelector('cart-drawer-component');
         if (drawer && typeof drawer.open === 'function') {
           drawer.open();
@@ -161,7 +177,6 @@
           if (toggle) toggle.click();
         }
 
-        // Refresh cart count bubble via section render
         fetch('/?sections=cart-bubble')
           .then(function (r) { return r.json(); })
           .then(function (data) {
@@ -336,14 +351,20 @@
   color: #c0392b;
 }
 
-.bundle-page__add-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.bundle-page__no-components {
+  font-size: 0.8rem;
+  color: #c0392b;
+  margin-bottom: 1rem;
 }
 
 .bundle-page__add-btn {
   width: 100%;
   margin-top: 0.25rem;
+}
+
+.bundle-page__add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .bundle-page__feedback {
@@ -352,13 +373,8 @@
   min-height: 1.2em;
 }
 
-.bundle-page__feedback--success {
-  color: #2a7a2a;
-}
-
-.bundle-page__feedback--error {
-  color: #c0392b;
-}
+.bundle-page__feedback--success { color: #2a7a2a; }
+.bundle-page__feedback--error { color: #c0392b; }
 {% endstylesheet %}
 
 {% schema %}
