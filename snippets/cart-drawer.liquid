@@ -108,72 +108,16 @@
             <div
               class="cart-drawer__summary"
             >
-              {%- assign upsell_products = '' | split: '' -%}
-              {%- if settings.cart_upsell_product_1 != blank -%}{%- assign _p = all_products[settings.cart_upsell_product_1] -%}{%- if _p.title != blank -%}{%- assign upsell_products = upsell_products | push: _p -%}{%- endif -%}{%- endif -%}
-              {%- if settings.cart_upsell_product_2 != blank -%}{%- assign _p = all_products[settings.cart_upsell_product_2] -%}{%- if _p.title != blank -%}{%- assign upsell_products = upsell_products | push: _p -%}{%- endif -%}{%- endif -%}
-              {%- if settings.cart_upsell_product_3 != blank -%}{%- assign _p = all_products[settings.cart_upsell_product_3] -%}{%- if _p.title != blank -%}{%- assign upsell_products = upsell_products | push: _p -%}{%- endif -%}{%- endif -%}
-              {%- if settings.cart_upsell_product_4 != blank -%}{%- assign _p = all_products[settings.cart_upsell_product_4] -%}{%- if _p.title != blank -%}{%- assign upsell_products = upsell_products | push: _p -%}{%- endif -%}{%- endif -%}
-              {%- if settings.cart_upsell_product_5 != blank -%}{%- assign _p = all_products[settings.cart_upsell_product_5] -%}{%- if _p.title != blank -%}{%- assign upsell_products = upsell_products | push: _p -%}{%- endif -%}{%- endif -%}
-              {%- if upsell_products.size > 0 -%}
-                {%- assign upsell_heading = settings.cart_upsell_heading | default: 'Pairs well with' -%}
-                <div class="cart-upsell">
-                  <div class="cart-upsell__header">
-                    <span class="cart-upsell__heading">{{ upsell_heading | upcase }}</span>
-                    <div class="cart-upsell__arrows">
-                      <button class="cart-upsell__arrow" data-dir="-1" aria-label="Previous">&#8249;</button>
-                      <button class="cart-upsell__arrow" data-dir="1" aria-label="Next">&#8250;</button>
-                    </div>
-                  </div>
-                  <div class="cart-upsell__track-wrapper">
-                    <div class="cart-upsell__track">
-                      {%- for product in upsell_products -%}
-                        <div class="cart-upsell__slide">
-                          <a href="{{ product.url }}" class="cart-upsell__img-wrap">
-                            {%- if product.featured_image -%}
-                              <img
-                                src="{{ product.featured_image | image_url: width: 160 }}"
-                                alt="{{ product.title | escape }}"
-                                width="80"
-                                height="80"
-                                loading="lazy"
-                              >
-                            {%- endif -%}
-                          </a>
-                          <div class="cart-upsell__info">
-                            <a href="{{ product.url }}" class="cart-upsell__title">{{ product.title }}</a>
-                            <p class="cart-upsell__price">{{ product.price | money }}</p>
-                            {%- assign color_option_index = nil -%}
-                            {%- for option in product.options -%}
-                              {%- if option == 'Color' or option == 'Colour' -%}
-                                {%- assign color_option_index = forloop.index0 -%}
-                              {%- endif -%}
-                            {%- endfor -%}
-                            {%- if color_option_index != nil -%}
-                              <div class="cart-upsell__swatches">
-                                {%- assign seen_colors = '' | split: '' -%}
-                                {%- for variant in product.variants limit: 6 -%}
-                                  {%- assign color_val = variant.options[color_option_index] -%}
-                                  {%- unless seen_colors contains color_val -%}
-                                    {%- assign seen_colors = seen_colors | push: color_val -%}
-                                    {%- if variant.image -%}
-                                      <span class="cart-upsell__swatch" style="background-image:url('{{ variant.image | image_url: width: 40 }}')" title="{{ color_val }}"></span>
-                                    {%- else -%}
-                                      <span class="cart-upsell__swatch cart-upsell__swatch--text" title="{{ color_val }}"></span>
-                                    {%- endif -%}
-                                  {%- endunless -%}
-                                {%- endfor -%}
-                              </div>
-                            {%- endif -%}
-                          </div>
-                          <button
-                            class="cart-upsell__add"
-                            data-variant-id="{{ product.first_available_variant.id }}"
-                            aria-label="Add {{ product.title | escape }} to cart"
-                          >ADD</button>
-                        </div>
-                      {%- endfor -%}
-                    </div>
-                  </div>
+              {%- assign _cu_handles = '' -%}
+              {%- if settings.cart_upsell_product_1 != blank -%}{%- assign _cu_handles = _cu_handles | append: settings.cart_upsell_product_1 | append: ',' -%}{%- endif -%}
+              {%- if settings.cart_upsell_product_2 != blank -%}{%- assign _cu_handles = _cu_handles | append: settings.cart_upsell_product_2 | append: ',' -%}{%- endif -%}
+              {%- if settings.cart_upsell_product_3 != blank -%}{%- assign _cu_handles = _cu_handles | append: settings.cart_upsell_product_3 | append: ',' -%}{%- endif -%}
+              {%- if settings.cart_upsell_product_4 != blank -%}{%- assign _cu_handles = _cu_handles | append: settings.cart_upsell_product_4 | append: ',' -%}{%- endif -%}
+              {%- if settings.cart_upsell_product_5 != blank -%}{%- assign _cu_handles = _cu_handles | append: settings.cart_upsell_product_5 | append: ',' -%}{%- endif -%}
+              {%- if _cu_handles != blank -%}
+                <div class="cart-upsell"
+                  data-handles="{{ _cu_handles | remove_last: ',' }}"
+                  data-heading="{{ settings.cart_upsell_heading | default: 'Pairs well with' | escape }}">
                 </div>
               {%- endif -%}
 
@@ -187,63 +131,115 @@
 </cart-drawer-component>
 
 <script>
-  (function () {
-    function initUpsell(drawer) {
-      var wrap = drawer.querySelector('.cart-upsell');
-      if (!wrap) return;
-      var track = wrap.querySelector('.cart-upsell__track');
-      var slides = wrap.querySelectorAll('.cart-upsell__slide');
-      var total = slides.length;
-      var current = 0;
+(function () {
+  function money(cents) {
+    return '$' + (cents / 100).toFixed(2);
+  }
 
-      function show(index) {
-        current = (index + total) % total;
-        track.style.transform = 'translateX(-' + (current * 100) + '%)';
-      }
-
-      wrap.querySelectorAll('.cart-upsell__arrow').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          show(current + parseInt(btn.dataset.dir, 10));
-        });
-      });
-
-      wrap.querySelectorAll('.cart-upsell__add').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var id = btn.dataset.variantId;
-          btn.disabled = true;
-          btn.textContent = '...';
-          fetch('/cart/add.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: id, quantity: 1 })
+  function bindAdd(wrap) {
+    wrap.querySelectorAll('.cart-upsell__add').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.dataset.variantId;
+        btn.disabled = true;
+        btn.textContent = '...';
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: parseInt(id, 10), quantity: 1 })
+        })
+          .then(function (r) { return r.json(); })
+          .then(function () {
+            btn.textContent = 'ADDED';
+            setTimeout(function () { btn.disabled = false; btn.textContent = 'ADD'; }, 1800);
+            document.dispatchEvent(new CustomEvent('cart:refresh'));
           })
-            .then(function (r) { return r.json(); })
-            .then(function () {
-              btn.textContent = 'ADDED';
-              setTimeout(function () {
-                btn.disabled = false;
-                btn.textContent = 'ADD';
-              }, 1800);
-              document.dispatchEvent(new CustomEvent('cart:refresh'));
-            })
-            .catch(function () {
-              btn.disabled = false;
-              btn.textContent = 'ADD';
-            });
-        });
+          .catch(function () { btn.disabled = false; btn.textContent = 'ADD'; });
       });
+    });
+  }
+
+  function buildCarousel(wrap, products) {
+    var heading = (wrap.dataset.heading || 'Pairs well with').toUpperCase();
+    var slides = products.map(function (p) {
+      var img = p.images && p.images.length
+        ? '<img src="' + p.images[0].src + '" alt="" width="72" height="72" loading="lazy" style="width:72px;height:72px;object-fit:cover;">'
+        : '';
+      var variant = p.variants && p.variants[0];
+      var price = variant ? money(variant.price) : '';
+      var vid = variant ? variant.id : '';
+      return '<div class="cart-upsell__slide" style="min-width:100%;display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid rgba(0,0,0,0.08);border-radius:6px;">'
+        + '<a href="/products/' + p.handle + '" style="flex-shrink:0;width:72px;height:72px;overflow:hidden;border-radius:4px;display:block;">' + img + '</a>'
+        + '<div style="flex:1;min-width:0;">'
+          + '<a href="/products/' + p.handle + '" style="display:block;font-size:0.8rem;font-weight:600;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + p.title + '</a>'
+          + '<p style="font-size:0.75rem;margin:2px 0 0;">' + price + '</p>'
+        + '</div>'
+        + '<button class="cart-upsell__add" data-variant-id="' + vid + '" style="flex-shrink:0;background:#000;color:#fff;border:none;border-radius:4px;font-size:0.65rem;font-weight:700;letter-spacing:0.06em;padding:8px 12px;cursor:pointer;">ADD</button>'
+        + '</div>';
+    }).join('');
+
+    var current = 0;
+    var total = products.length;
+
+    wrap.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+        + '<span style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;">' + heading + '</span>'
+        + '<div>'
+          + '<button class="cu-prev" style="background:none;border:none;cursor:pointer;font-size:1.6rem;padding:0 4px;opacity:0.5;">&#8249;</button>'
+          + '<button class="cu-next" style="background:none;border:none;cursor:pointer;font-size:1.6rem;padding:0 4px;opacity:0.5;">&#8250;</button>'
+        + '</div>'
+      + '</div>'
+      + '<div style="overflow:hidden;">'
+        + '<div class="cu-track" style="display:flex;transition:transform 0.3s ease;">' + slides + '</div>'
+      + '</div>';
+
+    var track = wrap.querySelector('.cu-track');
+    function show(i) {
+      current = (i + total) % total;
+      track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    }
+    wrap.querySelector('.cu-prev').addEventListener('click', function () { show(current - 1); });
+    wrap.querySelector('.cu-next').addEventListener('click', function () { show(current + 1); });
+    bindAdd(wrap);
+  }
+
+  async function loadUpsell(wrap) {
+    var handlesRaw = wrap.dataset.handles;
+    if (!handlesRaw) return;
+    var handles = handlesRaw.split(',').map(function (h) { return h.trim(); }).filter(Boolean);
+    if (!handles.length) return;
+
+    var products = [];
+    for (var i = 0; i < handles.length; i++) {
+      try {
+        var res = await fetch('/products/' + handles[i] + '.json');
+        if (res.ok) {
+          var data = await res.json();
+          if (data && data.product) products.push(data.product);
+        }
+      } catch (e) {}
     }
 
-    function setup() {
-      document.querySelectorAll('cart-drawer-component').forEach(initUpsell);
-    }
+    if (products.length) buildCarousel(wrap, products);
+  }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', setup);
-    } else {
-      setup();
-    }
-  })();
+  function init() {
+    document.querySelectorAll('.cart-upsell[data-handles]').forEach(loadUpsell);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  document.addEventListener('cart:refresh', function () {
+    setTimeout(function () {
+      document.querySelectorAll('.cart-upsell[data-handles]').forEach(function (w) {
+        if (!w.querySelector('.cu-track')) loadUpsell(w);
+      });
+    }, 300);
+  });
+})();
 </script>
 
 {% stylesheet %}
