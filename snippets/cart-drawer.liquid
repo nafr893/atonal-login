@@ -203,6 +203,7 @@
   var cuLoading = new WeakSet();
   var productCache = {};
   var cartPriceMap = {};
+  var cartItemSet = {};
 
   function startLoad(wrap) {
     if (cuLoading.has(wrap)) return;
@@ -302,8 +303,12 @@
     var variantCompare = variant && variant.compare_at_price ? parseFloat(variant.compare_at_price) : 0;
     var liqCents = liqPrices && liqPrices[p.handle];
     var cartDiscount = cartPriceMap[p.handle];
+    var inCart = cartItemSet[p.handle];
     var currentPrice, wasPrice;
-    if (cartDiscount) {
+    if (inCart) {
+      currentPrice = cartDiscount ? moneyFromCents(cartDiscount.final) : (variant ? money(variant.price) : '');
+      wasPrice = null;
+    } else if (cartDiscount) {
       currentPrice = moneyFromCents(cartDiscount.final);
       wasPrice = moneyFromCents(cartDiscount.original);
     } else if (liqCents) {
@@ -438,8 +443,10 @@
 
   function syncCartPrices(cart) {
     cartPriceMap = {};
+    cartItemSet = {};
     if (cart && cart.items) {
       cart.items.forEach(function (item) {
+        cartItemSet[item.handle] = true;
         if (item.original_price > item.final_price) {
           cartPriceMap[item.handle] = { final: item.final_price, original: item.original_price };
         }
