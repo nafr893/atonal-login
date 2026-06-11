@@ -105,83 +105,86 @@
               {% render 'cart-products' %}
             </scroll-hint>
 
-            {%- assign upsell_products = '' | split: '' -%}
-            {%- for i in (1..6) -%}
-              {%- assign pid_key = 'cart_upsell_product_' | append: i -%}
-              {%- assign pid_val = settings[pid_key] -%}
-              {%- if pid_val != blank -%}
-                {%- assign pid_product = all_products[pid_val] -%}
-                {%- if pid_product != empty -%}
-                  {%- assign upsell_products = upsell_products | push: pid_product -%}
-                {%- endif -%}
-              {%- endif -%}
-            {%- endfor -%}
-
-            {%- if upsell_products.size > 0 and settings.cart_upsell_heading != blank -%}
-              <div class="cart-upsell" data-current="0" data-total="{{ upsell_products.size }}">
-                <div class="cart-upsell__header">
-                  <span class="cart-upsell__heading">{{ settings.cart_upsell_heading | upcase }}</span>
-                  <div class="cart-upsell__arrows">
-                    <button class="cart-upsell__arrow" data-dir="-1" aria-label="Previous">&#8249;</button>
-                    <button class="cart-upsell__arrow" data-dir="1" aria-label="Next">&#8250;</button>
-                  </div>
-                </div>
-                <div class="cart-upsell__track-wrapper">
-                  <div class="cart-upsell__track">
-                    {%- for product in upsell_products -%}
-                      <div class="cart-upsell__slide">
-                        <a href="{{ product.url }}" class="cart-upsell__img-wrap">
-                          {%- if product.featured_image -%}
-                            <img
-                              src="{{ product.featured_image | image_url: width: 160 }}"
-                              alt="{{ product.title | escape }}"
-                              width="80"
-                              height="80"
-                              loading="lazy"
-                            >
-                          {%- endif -%}
-                        </a>
-                        <div class="cart-upsell__info">
-                          <a href="{{ product.url }}" class="cart-upsell__title">{{ product.title }}</a>
-                          <p class="cart-upsell__price">{{ product.price | money }}</p>
-                          {%- assign color_option_index = nil -%}
-                          {%- for option in product.options -%}
-                            {%- if option == 'Color' or option == 'Colour' -%}
-                              {%- assign color_option_index = forloop.index0 -%}
-                            {%- endif -%}
-                          {%- endfor -%}
-                          {%- if color_option_index != nil -%}
-                            <div class="cart-upsell__swatches">
-                              {%- assign seen_colors = '' | split: '' -%}
-                              {%- for variant in product.variants limit: 6 -%}
-                                {%- assign color_val = variant.options[color_option_index] -%}
-                                {%- unless seen_colors contains color_val -%}
-                                  {%- assign seen_colors = seen_colors | push: color_val -%}
-                                  {%- if variant.image -%}
-                                    <span class="cart-upsell__swatch" style="background-image:url('{{ variant.image | image_url: width: 40 }}')" title="{{ color_val }}"></span>
-                                  {%- else -%}
-                                    <span class="cart-upsell__swatch cart-upsell__swatch--text" title="{{ color_val }}"></span>
-                                  {%- endif -%}
-                                {%- endunless -%}
-                              {%- endfor -%}
-                            </div>
-                          {%- endif -%}
-                        </div>
-                        <button
-                          class="cart-upsell__add"
-                          data-variant-id="{{ product.first_available_variant.id }}"
-                          aria-label="Add {{ product.title | escape }} to cart"
-                        >ADD</button>
-                      </div>
-                    {%- endfor -%}
-                  </div>
-                </div>
-              </div>
-            {%- endif -%}
-
             <div
               class="cart-drawer__summary"
             >
+              {%- assign _up1 = all_products[settings.cart_upsell_product_1] -%}
+              {%- assign _up2 = all_products[settings.cart_upsell_product_2] -%}
+              {%- assign _up3 = all_products[settings.cart_upsell_product_3] -%}
+              {%- assign _up4 = all_products[settings.cart_upsell_product_4] -%}
+              {%- assign _up5 = all_products[settings.cart_upsell_product_5] -%}
+              {%- assign _up6 = all_products[settings.cart_upsell_product_6] -%}
+              {%- assign upsell_products = '' | split: '' -%}
+              {%- if _up1.id -%}{%- assign upsell_products = upsell_products | push: _up1 -%}{%- endif -%}
+              {%- if _up2.id -%}{%- assign upsell_products = upsell_products | push: _up2 -%}{%- endif -%}
+              {%- if _up3.id -%}{%- assign upsell_products = upsell_products | push: _up3 -%}{%- endif -%}
+              {%- if _up4.id -%}{%- assign upsell_products = upsell_products | push: _up4 -%}{%- endif -%}
+              {%- if _up5.id -%}{%- assign upsell_products = upsell_products | push: _up5 -%}{%- endif -%}
+              {%- if _up6.id -%}{%- assign upsell_products = upsell_products | push: _up6 -%}{%- endif -%}
+
+              {%- if upsell_products.size > 0 -%}
+                {%- assign upsell_heading = settings.cart_upsell_heading | default: 'Pairs well with' -%}
+                <div class="cart-upsell">
+                  <div class="cart-upsell__header">
+                    <span class="cart-upsell__heading">{{ upsell_heading | upcase }}</span>
+                    <div class="cart-upsell__arrows">
+                      <button class="cart-upsell__arrow" data-dir="-1" aria-label="Previous">&#8249;</button>
+                      <button class="cart-upsell__arrow" data-dir="1" aria-label="Next">&#8250;</button>
+                    </div>
+                  </div>
+                  <div class="cart-upsell__track-wrapper">
+                    <div class="cart-upsell__track">
+                      {%- for product in upsell_products -%}
+                        <div class="cart-upsell__slide">
+                          <a href="{{ product.url }}" class="cart-upsell__img-wrap">
+                            {%- if product.featured_image -%}
+                              <img
+                                src="{{ product.featured_image | image_url: width: 160 }}"
+                                alt="{{ product.title | escape }}"
+                                width="80"
+                                height="80"
+                                loading="lazy"
+                              >
+                            {%- endif -%}
+                          </a>
+                          <div class="cart-upsell__info">
+                            <a href="{{ product.url }}" class="cart-upsell__title">{{ product.title }}</a>
+                            <p class="cart-upsell__price">{{ product.price | money }}</p>
+                            {%- assign color_option_index = nil -%}
+                            {%- for option in product.options -%}
+                              {%- if option == 'Color' or option == 'Colour' -%}
+                                {%- assign color_option_index = forloop.index0 -%}
+                              {%- endif -%}
+                            {%- endfor -%}
+                            {%- if color_option_index != nil -%}
+                              <div class="cart-upsell__swatches">
+                                {%- assign seen_colors = '' | split: '' -%}
+                                {%- for variant in product.variants limit: 6 -%}
+                                  {%- assign color_val = variant.options[color_option_index] -%}
+                                  {%- unless seen_colors contains color_val -%}
+                                    {%- assign seen_colors = seen_colors | push: color_val -%}
+                                    {%- if variant.image -%}
+                                      <span class="cart-upsell__swatch" style="background-image:url('{{ variant.image | image_url: width: 40 }}')" title="{{ color_val }}"></span>
+                                    {%- else -%}
+                                      <span class="cart-upsell__swatch cart-upsell__swatch--text" title="{{ color_val }}"></span>
+                                    {%- endif -%}
+                                  {%- endunless -%}
+                                {%- endfor -%}
+                              </div>
+                            {%- endif -%}
+                          </div>
+                          <button
+                            class="cart-upsell__add"
+                            data-variant-id="{{ product.first_available_variant.id }}"
+                            aria-label="Add {{ product.title | escape }} to cart"
+                          >ADD</button>
+                        </div>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                </div>
+              {%- endif -%}
+
               {% render 'cart-summary' %}
             </div>
           </div>
