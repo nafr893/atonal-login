@@ -401,7 +401,8 @@
   }
 
   function syncCartPrices(cart) {
-    cartPriceMap = {};
+    // Intentionally does NOT reset cartPriceMap so simulation preview data
+    // is preserved across morphdom-triggered rebuilds. Real cart data overwrites.
     if (cart && cart.items) {
       cart.items.forEach(function (item) {
         if (item.original_price > item.final_price) {
@@ -462,26 +463,33 @@
       }
 
       if (added.length) {
-        try {
-          var previewCart = await fetch('/cart.js').then(function (r) { return r.json(); });
-          if (previewCart && previewCart.items) {
-            previewCart.items.forEach(function (item) {
-              if (item.original_price > item.final_price && !cartPriceMap[item.handle]) {
+        var previewCart = null;
+        try { previewCart = await fetch('/cart.js').then(function (r) { return r.json(); }); } catch (e) {}
+
+        var keysToRemove = [];
+        if (previewCart && previewCart.items) {
+          var addedHandles = {};
+          added.forEach(function (a) { addedHandles[a.handle] = a.variantId; });
+          previewCart.items.forEach(function (item) {
+            if (addedHandles[item.handle] !== undefined) {
+              // Capture the line item key for reliable removal
+              keysToRemove.push(item.key);
+              // Record discount if one was applied
+              if (item.original_price > item.final_price) {
                 cartPriceMap[item.handle] = { final: item.final_price, original: item.original_price };
               }
-            });
-          }
-        } catch (e) {}
-
-        for (var i = 0; i < added.length; i++) {
-          try {
-            await fetch('/cart/change.js', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ id: added[i].variantId, quantity: 0 })
-            });
-          } catch (e) {}
+            }
+          });
         }
+
+        // Remove all preview items in parallel using their cart keys
+        await Promise.all(keysToRemove.map(function (key) {
+          return fetch('/cart/change.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: key, quantity: 0 })
+          }).catch(function () {});
+        }));
       }
     }
 
