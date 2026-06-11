@@ -1,5 +1,6 @@
 {%- liquid
   assign bundle_variants = product.metafields.custom.component_variants.value
+  assign bundle_quantities = product.metafields.custom.component_quantities.value
   assign has_compare = false
   if product.compare_at_price > product.price
     assign has_compare = true
@@ -45,6 +46,7 @@
           <p class="bundle-page__components-heading">What's included</p>
           <ul class="bundle-page__component-list">
             {%- for v in bundle_variants -%}
+              {%- assign qty = bundle_quantities[forloop.index0] | default: 1 -%}
               <li class="bundle-page__component-item">
                 {%- assign thumb = v.image | default: v.product.featured_image -%}
                 {%- if thumb -%}
@@ -58,7 +60,9 @@
                   >
                 {%- endif -%}
                 <div class="bundle-page__component-info">
-                  <span class="bundle-page__component-title">{{ v.product.title }}</span>
+                  <span class="bundle-page__component-title">
+                    {%- if qty > 1 -%}{{ qty }}× {%- endif -%}{{ v.product.title }}
+                  </span>
                   {%- unless v.title == 'Default Title' -%}
                     <span class="bundle-page__component-variant">{{ v.title }}</span>
                   {%- endunless -%}
@@ -86,15 +90,18 @@
 
 <script>
 (function () {
-  var ids = [
-    {%- for v in bundle_variants -%}{{ v.id }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}
+  var bundleItems = [
+    {%- for v in bundle_variants -%}
+      {%- assign qty = bundle_quantities[forloop.index0] | default: 1 -%}
+      { id: {{ v.id }}, quantity: {{ qty }} }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
   ];
 
   var btn = document.getElementById('bundle-add-to-cart');
   var feedback = document.getElementById('bundle-feedback');
   var defaultLabel = btn ? btn.textContent.trim() : '';
 
-  if (!btn || !ids.length) return;
+  if (!btn || !bundleItems.length) return;
 
   btn.addEventListener('click', function () {
     btn.disabled = true;
@@ -102,7 +109,7 @@
     feedback.textContent = '';
     feedback.className = 'bundle-page__feedback';
 
-    var items = ids.map(function (id) { return { id: id, quantity: 1 }; });
+    var items = bundleItems;
 
     fetch('/cart/add.js', {
       method: 'POST',
