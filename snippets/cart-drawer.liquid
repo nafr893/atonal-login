@@ -107,15 +107,44 @@
 
             <div class="cart-drawer__summary">
               {%- assign cu_handles = '' -%}
-              {%- if settings.cart_upsell_product_1 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_1 | append: ',' -%}{%- endif -%}
-              {%- if settings.cart_upsell_product_2 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_2 | append: ',' -%}{%- endif -%}
-              {%- if settings.cart_upsell_product_3 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_3 | append: ',' -%}{%- endif -%}
-              {%- if settings.cart_upsell_product_4 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_4 | append: ',' -%}{%- endif -%}
-              {%- if settings.cart_upsell_product_5 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_5 | append: ',' -%}{%- endif -%}
+              {%- assign cu_liq_prices = '' -%}
+              {%- assign cu_is_wholesale = false -%}
+              {%- if customer -%}
+                {%- if customer.tags contains 'wg-wholesale' or customer.tags contains 'wholesale' -%}
+                  {%- assign cu_is_wholesale = true -%}
+                {%- endif -%}
+              {%- endif -%}
+              {%- if settings.cart_upsell_product_1 != blank -%}
+                {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_1 | append: ',' -%}
+                {%- assign cu_p = all_products[settings.cart_upsell_product_1].price | plus: 0 -%}
+                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_1 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+              {%- endif -%}
+              {%- if settings.cart_upsell_product_2 != blank -%}
+                {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_2 | append: ',' -%}
+                {%- assign cu_p = all_products[settings.cart_upsell_product_2].price | plus: 0 -%}
+                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_2 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+              {%- endif -%}
+              {%- if settings.cart_upsell_product_3 != blank -%}
+                {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_3 | append: ',' -%}
+                {%- assign cu_p = all_products[settings.cart_upsell_product_3].price | plus: 0 -%}
+                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_3 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+              {%- endif -%}
+              {%- if settings.cart_upsell_product_4 != blank -%}
+                {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_4 | append: ',' -%}
+                {%- assign cu_p = all_products[settings.cart_upsell_product_4].price | plus: 0 -%}
+                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_4 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+              {%- endif -%}
+              {%- if settings.cart_upsell_product_5 != blank -%}
+                {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_5 | append: ',' -%}
+                {%- assign cu_p = all_products[settings.cart_upsell_product_5].price | plus: 0 -%}
+                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_5 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+              {%- endif -%}
               {%- if cu_handles != blank -%}
                 <div class="cart-upsell"
                   data-handles="{{ cu_handles | remove_last: ',' }}"
-                  data-heading="{{ settings.cart_upsell_heading | default: 'Pairs well with' | escape }}">
+                  data-heading="{{ settings.cart_upsell_heading | default: 'Pairs well with' | escape }}"
+                  data-wholesale="{{ cu_is_wholesale }}"
+                  data-liquid-prices="{{ cu_liq_prices }}">
                 </div>
               {%- endif -%}
 
@@ -134,9 +163,27 @@
     return '$' + parseFloat(price).toFixed(2);
   }
 
+  function moneyFromCents(cents) {
+    return '$' + (cents / 100).toFixed(2);
+  }
+
+  function parseLiquidPrices(str) {
+    var map = {};
+    if (!str) return map;
+    str.split(';').forEach(function (pair) {
+      var idx = pair.indexOf(':');
+      if (idx > 0) {
+        var handle = pair.slice(0, idx).trim();
+        var cents = parseInt(pair.slice(idx + 1), 10);
+        if (handle && !isNaN(cents) && cents > 0) map[handle] = cents;
+      }
+    });
+    return map;
+  }
+
   var ARROW_STYLE = 'display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#fff;border:1px solid rgba(0,0,0,0.18);border-radius:4px;cursor:pointer;font-size:1.1rem;line-height:1;color:#000;padding:0;';
 
-  function refreshCartSection(savedHandles, savedHeading) {
+  function refreshCartSection(savedHandles, savedHeading, savedLiqPrices) {
     var cartComp = document.querySelector('cart-items-component');
     if (!cartComp) return;
     var sid = cartComp.dataset.sectionId;
@@ -156,6 +203,7 @@
         if (newUpsell && savedHandles) {
           newUpsell.dataset.handles = savedHandles;
           newUpsell.dataset.heading = savedHeading || 'Pairs well with';
+          newUpsell.dataset.liquidPrices = savedLiqPrices || '';
           loadUpsell(newUpsell);
         }
       })
@@ -163,11 +211,12 @@
   }
 
   function bindAdd(wrap) {
+    var handles = wrap.dataset.handles;
+    var heading = wrap.dataset.heading;
+    var liqPrices = wrap.dataset.liquidPrices || '';
     wrap.querySelectorAll('.cart-upsell__add').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var id = btn.dataset.variantId;
-        var handles = wrap.dataset.handles;
-        var heading = wrap.dataset.heading;
         btn.disabled = true;
         btn.textContent = '...';
         fetch('/cart/add.js', {
@@ -179,21 +228,22 @@
           .then(function () {
             btn.textContent = 'ADDED';
             setTimeout(function () { btn.disabled = false; btn.textContent = 'ADD'; }, 1800);
-            refreshCartSection(handles, heading);
+            refreshCartSection(handles, heading, liqPrices);
           })
           .catch(function () { btn.disabled = false; btn.textContent = 'ADD'; });
       });
     });
   }
 
-  function buildCarousel(wrap, products) {
+  function buildCarousel(wrap, products, liqPrices) {
     var heading = (wrap.dataset.heading || 'Pairs well with').toUpperCase();
     var slides = products.map(function (p) {
       var img = p.images && p.images.length
         ? '<img src="' + p.images[0].src + '" alt="" width="68" height="68" loading="lazy" style="width:68px;height:68px;object-fit:cover;">'
         : '';
       var variant = p.variants && p.variants[0];
-      var price = variant ? money(variant.price) : '';
+      var liqCents = liqPrices && liqPrices[p.handle];
+      var price = liqCents ? moneyFromCents(liqCents) : (variant ? money(variant.price) : '');
       var vid = variant ? variant.id : '';
       return '<div class="cart-upsell__slide" style="flex:0 0 100%;min-width:0;box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid rgba(0,0,0,0.09);border-radius:6px;">'
         + '<a href="/products/' + p.handle + '" style="flex-shrink:0;width:68px;height:68px;overflow:hidden;border-radius:4px;display:block;background:#f5f5f5;">' + img + '</a>'
@@ -209,7 +259,7 @@
     var total = products.length;
 
     wrap.innerHTML =
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">'
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 12px;">'
         + '<span style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;">' + heading + '</span>'
         + '<div style="display:flex;gap:4px;">'
           + '<button class="cu-prev" style="' + ARROW_STYLE + '">&#8249;</button>'
@@ -235,6 +285,7 @@
     if (!handlesRaw) return;
     var handles = handlesRaw.split(',').map(function (h) { return h.trim(); }).filter(Boolean);
     if (!handles.length) return;
+    var liqPrices = parseLiquidPrices(wrap.dataset.liquidPrices || '');
 
     var products = [];
     for (var i = 0; i < handles.length; i++) {
@@ -247,7 +298,7 @@
       } catch (e) {}
     }
 
-    if (products.length) buildCarousel(wrap, products);
+    if (products.length) buildCarousel(wrap, products, liqPrices);
   }
 
   function init() {
@@ -357,7 +408,7 @@ color: white !important;
     box-sizing: border-box !important;
     overflow: hidden !important;
     margin: 0;
-    padding: 12px 16px 8px;
+    padding: 10px 0 4px;
     background-color: var(--color-background);
     border-top: 1px solid rgba(var(--color-foreground), 0.1);
   }
