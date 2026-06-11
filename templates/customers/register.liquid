@@ -1,27 +1,182 @@
 {% layout 'theme' %}
-<h1>{{ 'customer.register.title' | t }}</h1>
 
-{% if customer %}
-  <p>{{ 'customer.register.already_account' | t }}</p>
-  <a href="{{ routes.account_url }}">{{ 'customer.account.title' | t }}</a>
-{% else %}
-  {% form 'create_customer' %}
-    <label for="FirstName">{{ 'customer.register.first_name' | t }}</label>
-    <input id="FirstName" name="customer[first_name]" type="text">
+{{ 'customer.css' | asset_url | stylesheet_tag }}
 
-    <label for="LastName">{{ 'customer.register.last_name' | t }}</label>
-    <input id="LastName" name="customer[last_name]" type="text">
+<style>
+  .login-page {
+    max-width: 30rem;
+    margin: 0 auto;
+    padding: 3rem 1rem 4rem;
+    text-align: center;
+  }
 
-    <label for="Email">{{ 'customer.register.email' | t }}</label>
-    <input id="Email" name="customer[email]" type="email" required>
+  .login-page h1 {
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    font-size: 2rem;
+  }
 
-    <label for="CreatePassword">{{ 'customer.register.password' | t }}</label>
-    <input id="CreatePassword" name="customer[password]" type="password" required>
+  .login-page .login-page__subtitle {
+    font-size: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
 
-    <button type="submit">{{ 'customer.register.submit' | t }}</button>
+  .login-page__field {
+    margin-bottom: 0.8rem;
+    text-align: left;
+  }
 
-    <p>
-      <a href="{{ routes.login_url }}">{{ 'customer.register.login' | t }}</a>
+  .login-page__label {
+    display: block;
+    font-size: 0.7rem;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+  }
+
+  .login-page__input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.75rem;
+    font-family: inherit;
+    border: 0.1rem solid #f5f5f5;
+    border-radius: var(--style-border-radius-inputs);
+    background-color: #f9f9f9;
+    color: rgb(var(--color-foreground));
+    transition: border-color 0.15s ease;
+    outline: none;
+  }
+
+  .login-page__input:focus {
+    border-color: #d0d0d0;
+  }
+
+  .login-page__input::placeholder {
+    color: rgba(var(--color-foreground), 0.35);
+  }
+
+  .login-page__submit {
+    margin-top: 1.2rem;
+    width: 100%;
+  }
+
+  .login-page__links {
+    margin-top: 1rem;
+    font-size: 0.7rem;
+  }
+
+  .login-page__links a {
+    color: rgb(var(--color-foreground));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .login-page .form-errors {
+    background: rgba(220, 50, 50, 0.07);
+    border-radius: var(--style-border-radius-inputs);
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 1rem;
+    text-align: left;
+    font-size: 0.7rem;
+    color: #c0392b;
+  }
+
+  .login-page .form-errors ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+<div class="login-page">
+  <h1>Create Account</h1>
+
+  {% if customer %}
+    <p>You are already logged in.</p>
+    <a href="{{ routes.account_url }}" class="button">Account</a>
+  {% else %}
+    <p class="login-page__subtitle">
+      Already have an account? <a href="{{ routes.login_url }}">Log in</a>
     </p>
-  {% endform %}
-{% endif %}
+
+    {%- form 'create_customer' -%}
+      {%- if form.errors -%}
+        <div class="form-errors">
+          <ul>
+            {%- for field in form.errors -%}
+              <li>
+                {%- if field == 'form' -%}
+                  {{ form.errors.messages[field] }}
+                {%- else -%}
+                  {{ form.errors.translated_fields[field] | capitalize }}
+                  {{ form.errors.messages[field] }}
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="login-page__field">
+        <label class="login-page__label" for="FirstName">First name</label>
+        <input
+          class="login-page__input"
+          id="FirstName"
+          name="customer[first_name]"
+          type="text"
+          autocomplete="given-name"
+          placeholder="First name"
+        >
+      </div>
+
+      <div class="login-page__field">
+        <label class="login-page__label" for="LastName">Last name</label>
+        <input
+          class="login-page__input"
+          id="LastName"
+          name="customer[last_name]"
+          type="text"
+          autocomplete="family-name"
+          placeholder="Last name"
+        >
+      </div>
+
+      <div class="login-page__field">
+        <label class="login-page__label" for="RegisterEmail">Email</label>
+        <input
+          class="login-page__input"
+          id="RegisterEmail"
+          name="customer[email]"
+          type="email"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="email"
+          placeholder="Email"
+          required
+        >
+      </div>
+
+      <div class="login-page__field">
+        <label class="login-page__label" for="RegisterPassword">Password</label>
+        <input
+          class="login-page__input"
+          id="RegisterPassword"
+          name="customer[password]"
+          type="password"
+          autocomplete="new-password"
+          placeholder="Password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="button login-page__submit">
+        Create account
+      </button>
+
+      <p class="login-page__links">
+        <a href="{{ routes.login_url }}">Already have an account? Log in</a>
+      </p>
+    {%- endform -%}
+  {% endif %}
+</div>
