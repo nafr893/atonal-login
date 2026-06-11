@@ -140,11 +140,18 @@
                 {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_5 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
               {%- endif -%}
               {%- if cu_handles != blank -%}
+                {%- assign cu_cart_prices = '' -%}
+                {%- for item in cart.items -%}
+                  {%- if item.original_price > item.final_price -%}
+                    {%- assign cu_cart_prices = cu_cart_prices | append: item.product.handle | append: ':' | append: item.final_price | append: ':' | append: item.original_price | append: ';' -%}
+                  {%- endif -%}
+                {%- endfor -%}
                 <div class="cart-upsell"
                   data-handles="{{ cu_handles | remove_last: ',' }}"
                   data-heading="{{ settings.cart_upsell_heading | default: 'Pairs well with' | escape }}"
                   data-wholesale="{{ cu_is_wholesale }}"
-                  data-liquid-prices="{{ cu_liq_prices }}">
+                  data-liquid-prices="{{ cu_liq_prices }}"
+                  data-cart-prices="{{ cu_cart_prices }}">
                 </div>
               {%- endif -%}
 
@@ -200,9 +207,13 @@
           .then(function (r) { return r.json(); })
           .then(function (cart) {
             syncCartPrices(cart);
+            parseCartPrices(wrap.dataset.cartPrices || '');
             buildCarousel(wrap, cachedProds, liqPrices);
           })
-          .catch(function () { buildCarousel(wrap, cachedProds, liqPrices); });
+          .catch(function () {
+            parseCartPrices(wrap.dataset.cartPrices || '');
+            buildCarousel(wrap, cachedProds, liqPrices);
+          });
         return;
       }
     }
@@ -400,9 +411,23 @@
     bindAdd(wrap);
   }
 
+  function parseCartPrices(str) {
+    if (!str) return;
+    str.split(';').forEach(function (entry) {
+      var parts = entry.split(':');
+      if (parts.length >= 3) {
+        var handle = parts[0].trim();
+        var final = parseInt(parts[1], 10);
+        var original = parseInt(parts[2], 10);
+        if (handle && !isNaN(final) && !isNaN(original) && original > final) {
+          cartPriceMap[handle] = { final: final, original: original };
+        }
+      }
+    });
+  }
+
   function syncCartPrices(cart) {
-    // Intentionally does NOT reset cartPriceMap so simulation preview data
-    // is preserved across morphdom-triggered rebuilds. Real cart data overwrites.
+    cartPriceMap = {};
     if (cart && cart.items) {
       cart.items.forEach(function (item) {
         if (item.original_price > item.final_price) {
@@ -419,7 +444,11 @@
     if (!handles.length) return;
     var liqPrices = parseLiquidPrices(wrap.dataset.liquidPrices || '');
 
-    // Fetch all products
+    var cartFetch = fetch('/cart.js')
+      .then(function (r) { return r.json(); })
+      .then(syncCartPrices)
+      .catch(function () {});
+
     var products = [];
     for (var i = 0; i < handles.length; i++) {
       try {
@@ -431,70 +460,16 @@
       } catch (e) {}
     }
 
-    if (!products.length) return;
+    await cartFetch;
 
-    // Sync real cart prices first (for items already in cart)
-    var cart = null;
-    try { cart = await fetch('/cart.js').then(function (r) { return r.json(); }); } catch (e) {}
-    syncCartPrices(cart);
+    // Liquid-rendered cart prices are always accurate (includes automatic discounts).
+    // Apply after AJAX sync so they override any missing/stale AJAX data.
+    parseCartPrices(wrap.dataset.cartPrices || '');
 
-    // Preview discount prices for products NOT yet in cart by temporarily adding them,
-    // reading the cart, then removing them. Horizon cart UI is event-driven, not
-    // fetch-intercepting, so these silent calls do not trigger header/drawer updates.
-    var inCart = {};
-    if (cart && cart.items) {
-      cart.items.forEach(function (item) { inCart[item.handle] = true; });
+    if (products.length) {
+      products.forEach(function (p) { productCache[p.handle] = p; });
+      buildCarousel(wrap, products, liqPrices);
     }
-    var toPreview = products.filter(function (p) {
-      return !inCart[p.handle] && p.variants && p.variants[0];
-    });
-
-    if (toPreview.length) {
-      var added = [];
-      for (var i = 0; i < toPreview.length; i++) {
-        try {
-          var r = await fetch('/cart/add.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: toPreview[i].variants[0].id, quantity: 1 })
-          });
-          if (r.ok) added.push({ handle: toPreview[i].handle, variantId: toPreview[i].variants[0].id });
-        } catch (e) {}
-      }
-
-      if (added.length) {
-        var previewCart = null;
-        try { previewCart = await fetch('/cart.js').then(function (r) { return r.json(); }); } catch (e) {}
-
-        var keysToRemove = [];
-        if (previewCart && previewCart.items) {
-          var addedHandles = {};
-          added.forEach(function (a) { addedHandles[a.handle] = a.variantId; });
-          previewCart.items.forEach(function (item) {
-            if (addedHandles[item.handle] !== undefined) {
-              // Capture the line item key for reliable removal
-              keysToRemove.push(item.key);
-              // Record discount if one was applied
-              if (item.original_price > item.final_price) {
-                cartPriceMap[item.handle] = { final: item.final_price, original: item.original_price };
-              }
-            }
-          });
-        }
-
-        // Remove all preview items in parallel using their cart keys
-        await Promise.all(keysToRemove.map(function (key) {
-          return fetch('/cart/change.js', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: key, quantity: 0 })
-          }).catch(function () {});
-        }));
-      }
-    }
-
-    products.forEach(function (p) { productCache[p.handle] = p; });
-    buildCarousel(wrap, products, liqPrices);
   }
 
   function observeCartChanges() {
