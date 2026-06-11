@@ -184,6 +184,7 @@
   var ARROW_STYLE = 'display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#fff;border:1px solid rgba(0,0,0,0.18);border-radius:4px;cursor:pointer;font-size:1.1rem;line-height:1;color:#000;padding:0;';
 
   var cuLoading = new WeakSet();
+  var productCache = {};
 
   function startLoad(wrap) {
     if (cuLoading.has(wrap)) return;
@@ -215,7 +216,14 @@
           newUpsell.dataset.handles = savedHandles;
           newUpsell.dataset.heading = savedHeading || 'Pairs well with';
           newUpsell.dataset.liquidPrices = savedLiqPrices || '';
-          startLoad(newUpsell);
+          var cachedProds = savedHandles.split(',')
+            .map(function (h) { return productCache[h.trim()]; })
+            .filter(Boolean);
+          if (cachedProds.length) {
+            buildCarousel(newUpsell, cachedProds, parseLiquidPrices(savedLiqPrices || ''));
+          } else {
+            startLoad(newUpsell);
+          }
         }
       })
       .catch(function () {});
@@ -309,7 +317,10 @@
       } catch (e) {}
     }
 
-    if (products.length) buildCarousel(wrap, products, liqPrices);
+    if (products.length) {
+      products.forEach(function (p) { productCache[p.handle] = p; });
+      buildCarousel(wrap, products, liqPrices);
+    }
   }
 
   function observeCartChanges() {
