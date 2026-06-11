@@ -418,11 +418,7 @@
     if (!handles.length) return;
     var liqPrices = parseLiquidPrices(wrap.dataset.liquidPrices || '');
 
-    var cartFetch = fetch('/cart.js')
-      .then(function (r) { return r.json(); })
-      .then(syncCartPrices)
-      .catch(function () {});
-
+    // Fetch all products
     var products = [];
     for (var i = 0; i < handles.length; i++) {
       try {
@@ -434,12 +430,63 @@
       } catch (e) {}
     }
 
-    await cartFetch;
+    if (!products.length) return;
 
-    if (products.length) {
-      products.forEach(function (p) { productCache[p.handle] = p; });
-      buildCarousel(wrap, products, liqPrices);
+    // Sync real cart prices first (for items already in cart)
+    var cart = null;
+    try { cart = await fetch('/cart.js').then(function (r) { return r.json(); }); } catch (e) {}
+    syncCartPrices(cart);
+
+    // Preview discount prices for products NOT yet in cart by temporarily adding them,
+    // reading the cart, then removing them. Horizon cart UI is event-driven, not
+    // fetch-intercepting, so these silent calls do not trigger header/drawer updates.
+    var inCart = {};
+    if (cart && cart.items) {
+      cart.items.forEach(function (item) { inCart[item.handle] = true; });
     }
+    var toPreview = products.filter(function (p) {
+      return !inCart[p.handle] && p.variants && p.variants[0];
+    });
+
+    if (toPreview.length) {
+      var added = [];
+      for (var i = 0; i < toPreview.length; i++) {
+        try {
+          var r = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: toPreview[i].variants[0].id, quantity: 1 })
+          });
+          if (r.ok) added.push({ handle: toPreview[i].handle, variantId: toPreview[i].variants[0].id });
+        } catch (e) {}
+      }
+
+      if (added.length) {
+        try {
+          var previewCart = await fetch('/cart.js').then(function (r) { return r.json(); });
+          if (previewCart && previewCart.items) {
+            previewCart.items.forEach(function (item) {
+              if (item.original_price > item.final_price && !cartPriceMap[item.handle]) {
+                cartPriceMap[item.handle] = { final: item.final_price, original: item.original_price };
+              }
+            });
+          }
+        } catch (e) {}
+
+        for (var i = 0; i < added.length; i++) {
+          try {
+            await fetch('/cart/change.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: added[i].variantId, quantity: 0 })
+            });
+          } catch (e) {}
+        }
+      }
+    }
+
+    products.forEach(function (p) { productCache[p.handle] = p; });
+    buildCarousel(wrap, products, liqPrices);
   }
 
   function observeCartChanges() {
