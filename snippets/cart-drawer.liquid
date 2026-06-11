@@ -105,20 +105,20 @@
               {% render 'cart-products' %}
             </scroll-hint>
 
-            {%- assign cu_handles = '' -%}
-            {%- if settings.cart_upsell_product_1 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_1 | append: ',' -%}{%- endif -%}
-            {%- if settings.cart_upsell_product_2 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_2 | append: ',' -%}{%- endif -%}
-            {%- if settings.cart_upsell_product_3 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_3 | append: ',' -%}{%- endif -%}
-            {%- if settings.cart_upsell_product_4 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_4 | append: ',' -%}{%- endif -%}
-            {%- if settings.cart_upsell_product_5 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_5 | append: ',' -%}{%- endif -%}
-            {%- if cu_handles != blank -%}
-              <div class="cart-upsell"
-                data-handles="{{ cu_handles | remove_last: ',' }}"
-                data-heading="{{ settings.cart_upsell_heading | default: 'Pairs well with' | escape }}">
-              </div>
-            {%- endif -%}
-
             <div class="cart-drawer__summary">
+              {%- assign cu_handles = '' -%}
+              {%- if settings.cart_upsell_product_1 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_1 | append: ',' -%}{%- endif -%}
+              {%- if settings.cart_upsell_product_2 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_2 | append: ',' -%}{%- endif -%}
+              {%- if settings.cart_upsell_product_3 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_3 | append: ',' -%}{%- endif -%}
+              {%- if settings.cart_upsell_product_4 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_4 | append: ',' -%}{%- endif -%}
+              {%- if settings.cart_upsell_product_5 != blank -%}{%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_5 | append: ',' -%}{%- endif -%}
+              {%- if cu_handles != blank -%}
+                <div class="cart-upsell"
+                  data-handles="{{ cu_handles | remove_last: ',' }}"
+                  data-heading="{{ settings.cart_upsell_heading | default: 'Pairs well with' | escape }}">
+                </div>
+              {%- endif -%}
+
               {% render 'cart-summary' %}
             </div>
           </div>
@@ -130,8 +130,8 @@
 
 <script>
 (function () {
-  function money(cents) {
-    return '$' + (cents / 100).toFixed(2);
+  function money(price) {
+    return '$' + parseFloat(price).toFixed(2);
   }
 
   function bindAdd(wrap) {
