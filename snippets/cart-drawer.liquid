@@ -321,10 +321,20 @@
             liqPrices
           );
         }
-        var imgEl = slide.querySelector('a img');
-        if (imgEl) {
-          var newSrc = opt.dataset.img || (p && p.images && p.images.length ? p.images[0].src : '');
-          if (newSrc) imgEl.src = newSrc;
+        var imgEl = slide.querySelector('.cu-thumb');
+        if (imgEl && p) {
+          var variantId = parseInt(opt.value, 10);
+          var newSrc = '';
+          if (p.images) {
+            for (var j = 0; j < p.images.length; j++) {
+              if (p.images[j].variant_ids && p.images[j].variant_ids.indexOf(variantId) !== -1) {
+                newSrc = p.images[j].src;
+                break;
+              }
+            }
+          }
+          if (!newSrc) newSrc = opt.dataset.img || (p.images && p.images.length ? p.images[0].src : '');
+          if (newSrc) imgEl.setAttribute('src', newSrc);
         }
       });
     });
@@ -335,7 +345,7 @@
     var SELECT_STYLE = 'margin-top:5px;font-size:0.68rem;padding:3px 5px;border:1px solid rgba(0,0,0,0.15);border-radius:4px;background:var(--color-background);color:inherit;width:100%;max-width:150px;cursor:pointer;outline:none;';
     var slides = products.map(function (p) {
       var img = p.images && p.images.length
-        ? '<img src="' + p.images[0].src + '" alt="" width="68" height="68" loading="lazy" style="width:68px;height:68px;object-fit:cover;">'
+        ? '<img class="cu-thumb" src="' + p.images[0].src + '" alt="" width="68" height="68" style="width:68px;height:68px;object-fit:cover;display:block;">'
         : '';
       var defaultVariant = p.variants && p.variants[0];
       var hasVariants = p.variants && p.variants.length > 1 &&
