@@ -68,7 +68,8 @@
     "show_installments": false,
     "show_accelerated_checkout_buttons": false,
     "cart_upsell_heading": "Recommended For You",
-    "cart_upsell_collection": "dads-cap",
+    "cart_upsell_product_1": "",
+    "cart_upsell_product_2": "",
     "drawer_drop_shadow": true,
     "icon_stroke": "default",
     "input_border_width": 1,
@@ -91,8 +92,7 @@
     "variant_button_border_width": 1,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
-    "cart_upsell_product_1": "a500p-printed-pattern-material",
-    "cart_upsell_product_2": "atonal-short-sleeve-t-shirt",
+    "cart_upsell_collection": "dads-cap",
     "sections": {
       "mega-menu-list-v2": {
         "type": "mega-menu-list-v2",
