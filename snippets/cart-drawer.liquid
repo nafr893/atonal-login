@@ -314,6 +314,11 @@
             liqPrices
           );
         }
+        var imgEl = slide.querySelector('a img');
+        if (imgEl) {
+          var newSrc = opt.dataset.img || (p && p.images && p.images.length ? p.images[0].src : '');
+          if (newSrc) imgEl.src = newSrc;
+        }
       });
     });
   }
@@ -334,7 +339,7 @@
       if (hasVariants) {
         variantSelect = '<select class="cu-variant-select" data-handle="' + p.handle + '" style="' + SELECT_STYLE + '">'
           + p.variants.map(function (v) {
-              return '<option value="' + v.id + '" data-price="' + (v.price || '') + '" data-compare="' + (v.compare_at_price || '') + '"'
+              return '<option value="' + v.id + '" data-price="' + (v.price || '') + '" data-compare="' + (v.compare_at_price || '') + '" data-img="' + (v.featured_image ? v.featured_image.src : '') + '"'
                 + (v.available === false ? ' disabled' : '') + '>'
                 + v.title + (v.available === false ? ' – Sold out' : '')
                 + '</option>';
