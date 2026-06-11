@@ -195,7 +195,14 @@
         .map(function (h) { return productCache[h.trim()]; })
         .filter(Boolean);
       if (cachedProds.length) {
-        buildCarousel(wrap, cachedProds, parseLiquidPrices(wrap.dataset.liquidPrices || ''));
+        var liqPrices = parseLiquidPrices(wrap.dataset.liquidPrices || '');
+        fetch('/cart.js')
+          .then(function (r) { return r.json(); })
+          .then(function (cart) {
+            syncCartPrices(cart);
+            buildCarousel(wrap, cachedProds, liqPrices);
+          })
+          .catch(function () { buildCarousel(wrap, cachedProds, liqPrices); });
         return;
       }
     }
