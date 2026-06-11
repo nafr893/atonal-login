@@ -5,6 +5,19 @@
   if product.compare_at_price > product.price
     assign has_compare = true
   endif
+
+  assign bundle_available = true
+  if bundle_variants
+    for v in bundle_variants
+      assign qty = bundle_quantities[forloop.index0] | default: 1
+      unless v.available
+        assign bundle_available = false
+      endunless
+      if v.inventory_management != blank and v.inventory_quantity < qty
+        assign bundle_available = false
+      endif
+    endfor
+  endif
 -%}
 
 <div class="bundle-page page-width">
@@ -66,6 +79,16 @@
                   {%- unless v.title == 'Default Title' -%}
                     <span class="bundle-page__component-variant">{{ v.title }}</span>
                   {%- endunless -%}
+                  {%- assign component_sold_out = false -%}
+                  {%- unless v.available -%}
+                    {%- assign component_sold_out = true -%}
+                  {%- endunless -%}
+                  {%- if v.inventory_management != blank and v.inventory_quantity < qty -%}
+                    {%- assign component_sold_out = true -%}
+                  {%- endif -%}
+                  {%- if component_sold_out -%}
+                    <span class="bundle-page__component-soldout">Sold out</span>
+                  {%- endif -%}
                 </div>
               </li>
             {%- endfor -%}
@@ -77,9 +100,13 @@
         class="button bundle-page__add-btn"
         id="bundle-add-to-cart"
         type="button"
-        {%- unless bundle_variants and bundle_variants.size > 0 -%}disabled{%- endunless -%}
+        {%- unless bundle_available and bundle_variants and bundle_variants.size > 0 -%}disabled{%- endunless -%}
       >
-        {{ section.settings.button_text }}
+        {%- if bundle_available -%}
+          {{ section.settings.button_text }}
+        {%- else -%}
+          Sold Out
+        {%- endif -%}
       </button>
 
       <p class="bundle-page__feedback" id="bundle-feedback" aria-live="polite"></p>
@@ -301,6 +328,17 @@
 .bundle-page__component-variant {
   font-size: 0.7rem;
   opacity: 0.55;
+}
+
+.bundle-page__component-soldout {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #c0392b;
+}
+
+.bundle-page__add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .bundle-page__add-btn {
