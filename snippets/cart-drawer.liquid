@@ -109,7 +109,7 @@
               class="cart-drawer__summary"
             >
               {%- assign upsell_col = collections[settings.cart_upsell_collection] -%}
-              {%- if upsell_col.products_count > 0 -%}
+              {%- if settings.cart_upsell_collection != blank and upsell_col.products.size > 0 -%}
                 {%- assign upsell_heading = settings.cart_upsell_heading | default: 'Pairs well with' -%}
                 <div class="cart-upsell">
                   <div class="cart-upsell__header">
