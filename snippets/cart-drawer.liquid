@@ -185,6 +185,7 @@
 
   var cuLoading = new WeakSet();
   var productCache = {};
+  var cartPriceMap = {};
 
   function startLoad(wrap) {
     if (cuLoading.has(wrap)) return;
@@ -211,10 +212,14 @@
     var sid = cartComp.dataset.sectionId;
     if (!sid) return;
 
-    fetch('/?sections=' + sid)
-      .then(function (r) { return r.json(); })
-      .then(function (sections) {
-        var html = sections[sid];
+    Promise.all([
+      fetch('/?sections=' + sid).then(function (r) { return r.json(); }),
+      fetch('/cart.js').then(function (r) { return r.json(); }).catch(function () { return null; })
+    ])
+      .then(function (results) {
+        syncCartPrices(results[1]);
+
+        var html = results[0][sid];
         if (!html) return;
         var doc = new DOMParser().parseFromString(html, 'text/html');
         var newComp = doc.querySelector('cart-items-component');
@@ -274,13 +279,20 @@
       var variantPrice = variant ? parseFloat(variant.price) : 0;
       var variantCompare = variant && variant.compare_at_price ? parseFloat(variant.compare_at_price) : 0;
       var liqCents = liqPrices && liqPrices[p.handle];
-      var currentPriceDollars = liqCents ? liqCents / 100 : variantPrice;
-      var currentPrice = liqCents ? moneyFromCents(liqCents) : (variant ? money(variant.price) : '');
-      var wasPrice = null;
-      if (liqCents && variantPrice > currentPriceDollars) {
-        wasPrice = money(variant.price);
-      } else if (!liqCents && variantCompare > variantPrice) {
+      var cartDiscount = cartPriceMap[p.handle];
+      var currentPrice, wasPrice;
+      if (cartDiscount) {
+        currentPrice = moneyFromCents(cartDiscount.final);
+        wasPrice = moneyFromCents(cartDiscount.original);
+      } else if (liqCents) {
+        currentPrice = moneyFromCents(liqCents);
+        wasPrice = variantPrice > liqCents / 100 ? money(variant.price) : null;
+      } else if (variantCompare > variantPrice) {
+        currentPrice = money(variant.price);
         wasPrice = money(variant.compare_at_price);
+      } else {
+        currentPrice = variant ? money(variant.price) : '';
+        wasPrice = null;
       }
       var priceHtml = wasPrice
         ? '<s style="opacity:0.45;font-size:0.7rem;text-decoration:line-through;">' + wasPrice + '</s>&nbsp;' + currentPrice
@@ -321,12 +333,28 @@
     bindAdd(wrap);
   }
 
+  function syncCartPrices(cart) {
+    cartPriceMap = {};
+    if (cart && cart.items) {
+      cart.items.forEach(function (item) {
+        if (item.original_price > item.final_price) {
+          cartPriceMap[item.handle] = { final: item.final_price, original: item.original_price };
+        }
+      });
+    }
+  }
+
   async function loadUpsell(wrap) {
     var handlesRaw = wrap.dataset.handles;
     if (!handlesRaw) return;
     var handles = handlesRaw.split(',').map(function (h) { return h.trim(); }).filter(Boolean);
     if (!handles.length) return;
     var liqPrices = parseLiquidPrices(wrap.dataset.liquidPrices || '');
+
+    var cartFetch = fetch('/cart.js')
+      .then(function (r) { return r.json(); })
+      .then(syncCartPrices)
+      .catch(function () {});
 
     var products = [];
     for (var i = 0; i < handles.length; i++) {
@@ -338,6 +366,8 @@
         }
       } catch (e) {}
     }
+
+    await cartFetch;
 
     if (products.length) {
       products.forEach(function (p) { productCache[p.handle] = p; });
