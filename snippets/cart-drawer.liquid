@@ -116,28 +116,38 @@
               {%- endif -%}
               {%- if settings.cart_upsell_product_1 != blank -%}
                 {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_1 | append: ',' -%}
-                {%- assign cu_p = all_products[settings.cart_upsell_product_1].price | plus: 0 -%}
-                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_1 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+                {%- if settings.cart_upsell_discount_price_1 != blank and settings.cart_upsell_discount_price_1 > 0 -%}
+                  {%- assign cu_p = settings.cart_upsell_discount_price_1 | times: 100 | round -%}
+                  {%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_1 | append: ':' | append: cu_p | append: ';' -%}
+                {%- endif -%}
               {%- endif -%}
               {%- if settings.cart_upsell_product_2 != blank -%}
                 {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_2 | append: ',' -%}
-                {%- assign cu_p = all_products[settings.cart_upsell_product_2].price | plus: 0 -%}
-                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_2 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+                {%- if settings.cart_upsell_discount_price_2 != blank and settings.cart_upsell_discount_price_2 > 0 -%}
+                  {%- assign cu_p = settings.cart_upsell_discount_price_2 | times: 100 | round -%}
+                  {%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_2 | append: ':' | append: cu_p | append: ';' -%}
+                {%- endif -%}
               {%- endif -%}
               {%- if settings.cart_upsell_product_3 != blank -%}
                 {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_3 | append: ',' -%}
-                {%- assign cu_p = all_products[settings.cart_upsell_product_3].price | plus: 0 -%}
-                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_3 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+                {%- if settings.cart_upsell_discount_price_3 != blank and settings.cart_upsell_discount_price_3 > 0 -%}
+                  {%- assign cu_p = settings.cart_upsell_discount_price_3 | times: 100 | round -%}
+                  {%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_3 | append: ':' | append: cu_p | append: ';' -%}
+                {%- endif -%}
               {%- endif -%}
               {%- if settings.cart_upsell_product_4 != blank -%}
                 {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_4 | append: ',' -%}
-                {%- assign cu_p = all_products[settings.cart_upsell_product_4].price | plus: 0 -%}
-                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_4 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+                {%- if settings.cart_upsell_discount_price_4 != blank and settings.cart_upsell_discount_price_4 > 0 -%}
+                  {%- assign cu_p = settings.cart_upsell_discount_price_4 | times: 100 | round -%}
+                  {%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_4 | append: ':' | append: cu_p | append: ';' -%}
+                {%- endif -%}
               {%- endif -%}
               {%- if settings.cart_upsell_product_5 != blank -%}
                 {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_5 | append: ',' -%}
-                {%- assign cu_p = all_products[settings.cart_upsell_product_5].price | plus: 0 -%}
-                {%- if cu_p > 0 -%}{%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_5 | append: ':' | append: cu_p | append: ';' -%}{%- endif -%}
+                {%- if settings.cart_upsell_discount_price_5 != blank and settings.cart_upsell_discount_price_5 > 0 -%}
+                  {%- assign cu_p = settings.cart_upsell_discount_price_5 | times: 100 | round -%}
+                  {%- assign cu_liq_prices = cu_liq_prices | append: settings.cart_upsell_product_5 | append: ':' | append: cu_p | append: ';' -%}
+                {%- endif -%}
               {%- endif -%}
               {%- if cu_handles != blank -%}
                 {%- assign cu_cart_prices = '' -%}
