@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "product-bundle",
+      "settings": {
+        "button_text": "Add Bundle to Cart"
+      }
+    }
+  },
+  "order": ["main"]
+}
