@@ -306,7 +306,7 @@
     var inCart = cartItemSet[p.handle];
     var currentPrice, wasPrice;
     if (inCart) {
-      currentPrice = cartDiscount ? moneyFromCents(cartDiscount.final) : (variant ? money(variant.price) : '');
+      currentPrice = variant ? money(variant.price) : '';
       wasPrice = null;
     } else if (cartDiscount) {
       currentPrice = moneyFromCents(cartDiscount.final);
