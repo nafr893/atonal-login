@@ -16,7 +16,7 @@
           "type": "text",
           "name": "t:names.text",
           "settings": {
-            "text": "<p><strong>NEW LAUNCH</strong></p>",
+            "text": "<p><strong>BEST SELLER</strong></p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -42,7 +42,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h1>A500SB SHORTBILL</h1>",
+            "text": "<h1>A500 SNAPBACK</h1>",
             "width": "fit-content",
             "max_width": "narrow",
             "alignment": "left",
@@ -68,7 +68,7 @@
           "type": "text",
           "name": "t:names.text",
           "settings": {
-            "text": "<h5>Limited quantity available online</h5>",
+            "text": "<p>High-quality 5-panel snapback</p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -95,7 +95,7 @@
           "name": "t:names.button",
           "settings": {
             "label": "SHOP NOW",
-            "link": "shopify://products/a500sb",
+            "link": "shopify://products/a500",
             "open_in_new_tab": false,
             "style_class": "button",
             "width": "custom",
@@ -117,7 +117,7 @@
         "link": "",
         "open_in_new_tab": false,
         "media_type_1": "image",
-        "image_1": "shopify://shop_images/Atonal_Homepage_Shortbill_V3.png",
+        "image_1": "shopify://shop_images/Flat_Brims_Collection_Picture_-min.webp",
         "media_type_2": "image",
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -149,7 +149,7 @@
           "type": "text",
           "name": "t:names.text",
           "settings": {
-            "text": "<p><strong>NEW LAUNCH</strong></p>",
+            "text": "<p><strong>BEST SELLER</strong></p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -175,7 +175,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h1>A500SB SHORTBILL</h1>",
+            "text": "<h1>A500 SNAPBACK</h1>",
             "width": "fit-content",
             "max_width": "narrow",
             "alignment": "left",
@@ -201,7 +201,7 @@
           "type": "text",
           "name": "t:names.text",
           "settings": {
-            "text": "<h5>Limited quantity available online</h5>",
+            "text": "<p>High-quality 5-panel snapback</p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -228,7 +228,7 @@
           "name": "t:names.button",
           "settings": {
             "label": "SHOP NOW",
-            "link": "shopify://products/a500sb",
+            "link": "shopify://products/a500",
             "open_in_new_tab": false,
             "style_class": "button",
             "width": "custom",
@@ -250,7 +250,7 @@
         "link": "",
         "open_in_new_tab": false,
         "media_type_1": "image",
-        "image_1": "shopify://shop_images/Atonal_Mobile_Homepage_Shortbill_V1-min.webp",
+        "image_1": "shopify://shop_images/earth_friendly_a500_1.1.webp",
         "media_type_2": "image",
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -683,7 +683,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "device_visibility": "both"
       }
     },
     "section_rNtbwe": {
@@ -916,7 +917,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "device_visibility": "both"
       }
     },
     "section_mdKKKr": {
@@ -966,7 +968,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "device_visibility": "both"
       }
     },
     "section_7Bj7ET": {
@@ -2095,7 +2098,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 50,
-        "padding-block-end": 50
+        "padding-block-end": 50,
+        "device_visibility": "desktop"
       }
     },
     "section_kcRhCb": {
@@ -3465,7 +3469,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 30,
-        "padding-block-end": 30
+        "padding-block-end": 30,
+        "device_visibility": "mobile"
       }
     },
     "collection_list_xttMKY": {
@@ -3851,7 +3856,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "device_visibility": "both"
       }
     }
   },
