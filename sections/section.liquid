@@ -1,5 +1,16 @@
 {% # import schema from '../schemas/sections/section' %}
 
+{% if section.settings.device_visibility == 'mobile' %}
+  {% style %}
+    #shopify-section-{{ section.id }} { display: none; }
+    @media (max-width: 749px) { #shopify-section-{{ section.id }} { display: block; } }
+  {% endstyle %}
+{% elsif section.settings.device_visibility == 'desktop' %}
+  {% style %}
+    @media (max-width: 749px) { #shopify-section-{{ section.id }} { display: none; } }
+  {% endstyle %}
+{% endif %}
+
 {% capture children %}
   {% content_for 'blocks' %}
 {% endcapture %}
@@ -418,6 +429,21 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "select",
+      "id": "device_visibility",
+      "label": "Show on",
+      "options": [
+        { "value": "both", "label": "Mobile & Desktop" },
+        { "value": "mobile", "label": "Mobile only" },
+        { "value": "desktop", "label": "Desktop only" }
+      ],
+      "default": "both"
     }
   ],
   "presets": [
