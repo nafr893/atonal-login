@@ -109,9 +109,13 @@
               {%- assign cu_handles = '' -%}
               {%- assign cu_liq_prices = '' -%}
               {%- assign cu_is_wholesale = false -%}
+              {%- assign cu_is_retail = false -%}
               {%- if customer -%}
                 {%- if customer.tags contains 'wg-wholesale' or customer.tags contains 'wholesale' -%}
                   {%- assign cu_is_wholesale = true -%}
+                {%- endif -%}
+                {%- if customer.tags contains 'Retail' -%}
+                  {%- assign cu_is_retail = true -%}
                 {%- endif -%}
               {%- endif -%}
               {%- if settings.cart_upsell_product_1 != blank -%}
@@ -160,6 +164,7 @@
                   data-handles="{{ cu_handles | remove_last: ',' }}"
                   data-heading="{{ settings.cart_upsell_heading | default: 'Pairs well with' | escape }}"
                   data-wholesale="{{ cu_is_wholesale }}"
+                  data-retail="{{ cu_is_retail }}"
                   data-liquid-prices="{{ cu_liq_prices }}"
                   data-cart-prices="{{ cu_cart_prices }}">
                 </div>
@@ -298,7 +303,7 @@
     });
   }
 
-  function computePrice(p, variant, liqPrices) {
+  function computePrice(p, variant, liqPrices, isRetail) {
     var variantPrice = variant ? parseFloat(variant.price) : 0;
     var variantCompare = variant && variant.compare_at_price ? parseFloat(variant.compare_at_price) : 0;
     var liqCents = liqPrices && liqPrices[p.handle];
@@ -306,6 +311,9 @@
     var inCart = cartItemSet[p.handle];
     var currentPrice, wasPrice;
     if (inCart) {
+      currentPrice = variant ? money(variant.price) : '';
+      wasPrice = null;
+    } else if (!isRetail) {
       currentPrice = variant ? money(variant.price) : '';
       wasPrice = null;
     } else if (cartDiscount) {
@@ -326,7 +334,7 @@
       : currentPrice;
   }
 
-  function bindVariantSelects(wrap, products, liqPrices) {
+  function bindVariantSelects(wrap, products, liqPrices, isRetail) {
     wrap.querySelectorAll('.cu-variant-select').forEach(function (select) {
       select.addEventListener('change', function () {
         var slide = select.closest('.cart-upsell__slide');
@@ -344,7 +352,8 @@
           priceEl.innerHTML = computePrice(
             p,
             { price: opt.dataset.price, compare_at_price: opt.dataset.compare || null },
-            liqPrices
+            liqPrices,
+            isRetail
           );
         }
         var imgEl = slide.querySelector('.cu-thumb');
@@ -367,6 +376,7 @@
   }
 
   function buildCarousel(wrap, products, liqPrices) {
+    var isRetail = wrap.dataset.retail === 'true';
     var heading = (wrap.dataset.heading || 'Pairs well with').toUpperCase();
     var SELECT_STYLE = 'margin-top:5px;font-size:0.68rem;padding:3px 5px;border:1px solid #ededed;border-radius:4px;background:#ffffff;color:inherit;width:100%;max-width:150px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;';
     var slides = products.map(function (p) {
@@ -376,7 +386,7 @@
       var defaultVariant = p.variants && p.variants[0];
       var hasVariants = p.variants && p.variants.length > 1 &&
         !(p.variants.length === 1 && p.variants[0].title === 'Default Title');
-      var priceHtml = computePrice(p, defaultVariant, liqPrices);
+      var priceHtml = computePrice(p, defaultVariant, liqPrices, isRetail);
       var vid = defaultVariant ? defaultVariant.id : '';
       var variantSelect = '';
       if (hasVariants) {
@@ -422,7 +432,7 @@
     }
     wrap.querySelector('.cu-prev').addEventListener('click', function () { show(current - 1); });
     wrap.querySelector('.cu-next').addEventListener('click', function () { show(current + 1); });
-    bindVariantSelects(wrap, products, liqPrices);
+    bindVariantSelects(wrap, products, liqPrices, isRetail);
     bindAdd(wrap);
   }
 
