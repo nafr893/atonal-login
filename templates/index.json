@@ -683,7 +683,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "device_visibility": "both"
       }
     },
     "section_rNtbwe": {
@@ -916,7 +917,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "device_visibility": "both"
       }
     },
     "section_mdKKKr": {
@@ -966,7 +968,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "device_visibility": "both"
       }
     },
     "section_7Bj7ET": {
@@ -2095,7 +2098,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 50,
-        "padding-block-end": 50
+        "padding-block-end": 50,
+        "device_visibility": "desktop"
       }
     },
     "section_kcRhCb": {
@@ -3465,7 +3469,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 30,
-        "padding-block-end": 30
+        "padding-block-end": 30,
+        "device_visibility": "mobile"
       }
     },
     "collection_list_xttMKY": {
@@ -3851,7 +3856,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "device_visibility": "both"
       }
     }
   },
