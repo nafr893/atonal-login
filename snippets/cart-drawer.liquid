@@ -114,9 +114,9 @@
                 {%- if customer.tags contains 'wg-wholesale' or customer.tags contains 'wholesale' -%}
                   {%- assign cu_is_wholesale = true -%}
                 {%- endif -%}
-                {%- if customer.tags contains 'Retail' -%}
+                {%- unless customer.tags contains 'wg-wholesale' or customer.tags contains 'wholesale' or customer.tags contains 'wholesale2' -%}
                   {%- assign cu_is_retail = true -%}
-                {%- endif -%}
+                {%- endunless -%}
               {%- endif -%}
               {%- if settings.cart_upsell_product_1 != blank -%}
                 {%- assign cu_handles = cu_handles | append: settings.cart_upsell_product_1 | append: ',' -%}
