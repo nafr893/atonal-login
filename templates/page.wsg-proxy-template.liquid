@@ -144,7 +144,7 @@
     Access control: allow only logged-in customers with one of the required tags.
     Edit the list below to match your shop (e.g., wholesale, dealer).
   {%- endcomment -%}
-  {% assign required_tags = "wwg_wholesale,wholesale" | split: "," %}
+  {% assign required_tags = "wwg_wholesale,wholesale,wg_wholesale,wholesale2,wg-wholesale" | split: "," %}
 
   {% assign has_access = false %}
   {% if customer %}
@@ -208,7 +208,7 @@
       {% if customer %}
         <p>You’re logged in as <strong>{{ customer.email }}</strong>, but your account
         doesn’t have wholesale access yet.</p>
-        <p><a href="/pages/wholesale-apply" class="button">Request Access</a></p>
+        <p><a href="https://atonal.co/pages/contact" class="button">Request Access</a></p>
         <p><a href="/account/logout?return_url={{ routes.account_login_url | url_encode }}" class="link">Switch account</a></p>
       {% else %}
         <p>Please log in to view the wholesale quick order page.</p>
