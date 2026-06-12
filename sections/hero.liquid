@@ -195,7 +195,7 @@
   {% endcomment %}
 
   <div
-    class="hero__container spacing-style section section--full-width"
+    class="hero__container spacing-style section section--full-width{% if section.settings.device_visibility == 'mobile' %} hero--mobile-only{% elsif section.settings.device_visibility == 'desktop' %} hero--desktop-only{% endif %}"
     style="      {% render 'spacing-style', settings: section.settings %}"
   >
     {%- if section.settings.link != blank -%}
@@ -398,6 +398,19 @@
         right: 0;
         left: auto;
       }
+    }
+  }
+
+  .hero--mobile-only {
+    display: none;
+  }
+
+  @media (max-width: 749px) {
+    .hero--mobile-only {
+      display: block;
+    }
+    .hero--desktop-only {
+      display: none;
     }
   }
 {% endstylesheet %}
@@ -805,6 +818,21 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Visibility"
+    },
+    {
+      "type": "select",
+      "id": "device_visibility",
+      "label": "Show on",
+      "options": [
+        { "value": "both", "label": "Mobile & Desktop" },
+        { "value": "mobile", "label": "Mobile only" },
+        { "value": "desktop", "label": "Desktop only" }
+      ],
+      "default": "both"
     }
   ],
   "presets": [
