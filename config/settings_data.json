@@ -147,7 +147,7 @@
             "type": "text_block",
             "settings": {
               "text_input": "Tax ID/ABN/VAT Number",
-              "isRequired": false
+              "isRequired": true
             }
           },
           "7e3c653e-b2ef-4189-a5fd-6641fd6563d3": {
