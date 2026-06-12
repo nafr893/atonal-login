@@ -152,8 +152,74 @@
       </button>
 
       <p class="login-page__links">
-        <a href="{{ routes.password_recovery_url }}">Forgot your password?</a>
+        <a href="#" id="forgot-toggle">Forgot your password?</a>
       </p>
     {%- endform -%}
+
+    <div id="recover-form" style="display:none;margin-top:1.5rem;">
+      <p class="login-page__subtitle" style="margin-bottom:1rem;">Enter your email and we'll send you a reset link.</p>
+      {%- form 'recover_customer_password' -%}
+        {%- if form.posted_successfully? -%}
+          <p style="font-size:0.8rem;color:#2a7a2a;margin-bottom:1rem;">Check your email for a reset link.</p>
+        {%- endif -%}
+        {%- if form.errors -%}
+          <div class="form-errors">
+            <ul>
+              {%- for field in form.errors -%}
+                <li>
+                  {%- if field == 'form' -%}{{ form.errors.messages[field] }}
+                  {%- else -%}{{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          </div>
+        {%- endif -%}
+        <div class="login-page__field">
+          <label class="login-page__label" for="RecoverEmail">Email</label>
+          <input class="login-page__input" id="RecoverEmail" name="email" type="email" autocomplete="email" placeholder="Email" required>
+        </div>
+        <button type="submit" class="button login-page__submit">Send Reset Link</button>
+        <p class="login-page__links" style="margin-top:0.75rem;">
+          <a href="#" id="recover-cancel">Back to login</a>
+        </p>
+      {%- endform -%}
+    </div>
+
   {% endif %}
 </div>
+
+<script>
+  (function () {
+    var toggle = document.getElementById('forgot-toggle');
+    var cancel = document.getElementById('recover-cancel');
+    var recoverForm = document.getElementById('recover-form');
+    var loginForm = document.querySelector('.login-page form');
+    var loginLinks = document.querySelector('.login-page__links');
+
+    if (toggle && recoverForm) {
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        recoverForm.style.display = 'block';
+        if (loginForm) loginForm.style.display = 'none';
+        if (loginLinks) loginLinks.style.display = 'none';
+      });
+    }
+
+    if (cancel && recoverForm) {
+      cancel.addEventListener('click', function (e) {
+        e.preventDefault();
+        recoverForm.style.display = 'none';
+        if (loginForm) loginForm.style.display = 'block';
+        if (loginLinks) loginLinks.style.display = 'block';
+      });
+    }
+
+    {%- if recover.attempted -%}
+      if (recoverForm && loginForm) {
+        recoverForm.style.display = 'block';
+        loginForm.style.display = 'none';
+      }
+    {%- endif -%}
+  })();
+</script>
