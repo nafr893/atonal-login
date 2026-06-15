@@ -16,7 +16,7 @@
           "type": "text",
           "name": "t:names.text",
           "settings": {
-            "text": "<p><strong>BEST SELLER</strong></p>",
+            "text": "<p><strong>NEW</strong></p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -42,7 +42,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h1>A500 SNAPBACK</h1>",
+            "text": "<h1>A590 A Frame Snapback</h1>",
             "width": "fit-content",
             "max_width": "narrow",
             "alignment": "left",
