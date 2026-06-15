@@ -149,7 +149,7 @@
           "type": "text",
           "name": "t:names.text",
           "settings": {
-            "text": "<p><strong>BEST SELLER</strong></p>",
+            "text": "<p><strong>NEW</strong></p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -175,7 +175,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h1>A500 SNAPBACK</h1>",
+            "text": "<h1>A590 A FRAME<br/>SNAPBACK</h1>",
             "width": "fit-content",
             "max_width": "narrow",
             "alignment": "left",
@@ -201,7 +201,7 @@
           "type": "text",
           "name": "t:names.text",
           "settings": {
-            "text": "<p>High-quality 5-panel snapback</p>",
+            "text": "<p>Limited Inventory Online</p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -228,7 +228,7 @@
           "name": "t:names.button",
           "settings": {
             "label": "SHOP NOW",
-            "link": "shopify://products/a500",
+            "link": "shopify://products/a590-a-frame-snapback",
             "open_in_new_tab": false,
             "style_class": "button",
             "width": "custom",
@@ -250,7 +250,7 @@
         "link": "",
         "open_in_new_tab": false,
         "media_type_1": "image",
-        "image_1": "shopify://shop_images/earth_friendly_a500_1.1.webp",
+        "image_1": "shopify://shop_images/X_ad68a869-8725-4cf3-891f-156eb3016802.webp",
         "media_type_2": "image",
         "content_direction": "column",
         "vertical_on_mobile": true,
