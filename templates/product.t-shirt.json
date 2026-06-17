@@ -1316,6 +1316,7 @@
         "group_GLkTX9",
         "group_RYctpT"
       ],
+      "disabled": true,
       "name": "Supporting Images (Hats)",
       "settings": {
         "content_direction": "row",
@@ -1342,7 +1343,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "device_visibility": "both"
       }
     },
     "17523331806f87659f": {
@@ -1784,7 +1786,8 @@
         "overlay_style": "solid",
         "gradient_direction": "to top",
         "padding-block-start": 40,
-        "padding-block-end": 40
+        "padding-block-end": 40,
+        "device_visibility": "both"
       }
     }
   },
