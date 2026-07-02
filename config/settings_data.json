@@ -196,6 +196,11 @@
         "type": "shopify://apps/inventora-show-stock-level/blocks/app-embed/ee1e864c-45c9-443d-b2a2-21726ee946b9",
         "disabled": false,
         "settings": {}
+      },
+      "5918445685253060206": {
+        "type": "shopify://apps/bundler/blocks/bundler-script-append/7a6ae1b8-3b16-449b-8429-8bb89a62c664",
+        "disabled": false,
+        "settings": {}
       }
     },
     "color_schemes": {
