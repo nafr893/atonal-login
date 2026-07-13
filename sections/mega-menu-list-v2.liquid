@@ -26,13 +26,17 @@
     <div class="mega-menu-list-v2__promos">
       <div class="mega-menu-list-v2__promo">
         {% if section.settings.left_image %}
-          
           <a href="{{ section.settings.left_link }}">
-           <div class="menu-image-wrapper">
+            <div class="menu-image-wrapper">
               <img src="{{ section.settings.left_image | image_url: width: 600 }}" alt="Promo Left">
-              <span class="mega-menu-list-v2__promo-text">{{ section.settings.left_text }}</span>
-                        <div class="menu-image-overlay"></div>
-</div>
+              <div class="menu-image-overlay"></div>
+              <div class="mega-menu-list-v2__promo-content">
+                {% if section.settings.left_text != blank %}
+                  <span class="mega-menu-list-v2__promo-title">{{ section.settings.left_text }}</span>
+                {% endif %}
+                <span class="mega-menu-list-v2__promo-btn">{{ section.settings.left_button_text | default: 'Shop All' }}</span>
+              </div>
+            </div>
           </a>
         {% endif %}
       </div>
@@ -40,12 +44,16 @@
       <div class="mega-menu-list-v2__promo">
         {% if section.settings.right_image %}
           <a href="{{ section.settings.right_link }}">
-           <div class="menu-image-wrapper">
-
+            <div class="menu-image-wrapper">
               <img src="{{ section.settings.right_image | image_url: width: 600 }}" alt="Promo Right">
-              <span class="mega-menu-list-v2__promo-text">{{ section.settings.right_text }}</span>
-                       <div class="menu-image-overlay"></div>
-</div>
+              <div class="menu-image-overlay"></div>
+              <div class="mega-menu-list-v2__promo-content">
+                {% if section.settings.right_text != blank %}
+                  <span class="mega-menu-list-v2__promo-title">{{ section.settings.right_text }}</span>
+                {% endif %}
+                <span class="mega-menu-list-v2__promo-btn">{{ section.settings.right_button_text | default: 'Shop All' }}</span>
+              </div>
+            </div>
           </a>
         {% endif %}
       </div>
@@ -81,6 +89,12 @@
       "label": "Left Promo Link"
     },
     {
+      "type": "text",
+      "id": "left_button_text",
+      "label": "Left Button Text",
+      "default": "Shop All"
+    },
+    {
       "type": "image_picker",
       "id": "right_image",
       "label": "Right Promo Image"
@@ -95,6 +109,12 @@
       "type": "url",
       "id": "right_link",
       "label": "Right Promo Link"
+    },
+    {
+      "type": "text",
+      "id": "right_button_text",
+      "label": "Right Button Text",
+      "default": "Shop All"
     },
     {
     "type": "text", 
@@ -199,10 +219,11 @@ box-sizing: border-box;
 }
 
 div.menu-image-wrapper {
-  width: 100%;  
-  height: 100%; 
+  width: 100%;
+  height: 100%;
   display: block;
   position: relative;
+  overflow: hidden;
 }
 
 .mega-menu-list-v2__promo img:hover {
@@ -232,15 +253,41 @@ div.menu-image-overlay {
 }
 }
 
-.mega-menu-list-v2__promo-text {
-  position: relative;
+.mega-menu-list-v2__promo-content {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
   z-index: 4;
-  bottom: 60px;
-  left: 20px; 
-  place-self: center; 
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.mega-menu-list-v2__promo-title {
   color: white;
-  font-weight: bold;
-  font-size: 2rem;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+.mega-menu-list-v2__promo-btn {
+  display: inline-block;
+  background: #ffffff;
+  color: #000000;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  border-radius: 3px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mega-menu-list-v2__promo:hover .mega-menu-list-v2__promo-btn {
+  background: #000000;
+  color: #ffffff;
 }
 
 
