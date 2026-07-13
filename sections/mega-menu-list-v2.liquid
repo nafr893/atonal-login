@@ -153,8 +153,12 @@
   list-style: none;
   padding: 0;
   margin: 0;
-display: grid;
-grid-template-columns: 1fr 1fr;
+  display: grid;
+  {% if section.settings.left_image and section.settings.right_image %}
+  grid-template-columns: 1fr 1fr;
+  {% else %}
+  grid-template-columns: 1fr 1fr 1fr;
+  {% endif %}
 }
 
 
