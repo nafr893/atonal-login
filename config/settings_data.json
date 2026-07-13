@@ -115,10 +115,9 @@
           "left_text": "NEW A590P",
           "left_link": "shopify://products/a590p-camo-a-frame-snapback",
           "left_button_text": "SHOP NOW",
-          "right_image": "shopify://shop_images/Shop_all_1.3-min.webp",
-          "right_text": "ALL HATS",
-          "right_link": "shopify://collections/all",
-          "right_button_text": "SHOP NOW",
+          "right_text": "",
+          "right_link": "",
+          "right_button_text": "",
           "product_menu_title": "Shop By Hat"
         }
       },
