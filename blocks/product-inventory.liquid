@@ -41,7 +41,6 @@
   endif
 -%}
 
-{%- if inventory_quantity < 500 or status == 'out_of_stock' -%}
 <product-inventory
   class="
     product-inventory spacing-style
@@ -82,7 +81,6 @@
     </span>
   </span>
 </product-inventory>
-{%- endif -%}
 
 {% stylesheet %}
   .product-inventory__status {
