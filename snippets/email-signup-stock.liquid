@@ -1,81 +1,97 @@
-{% form 'customer', data-disable-recaptcha: 'true' %}
-  <!-- form fields here -->
-{% endform %}
-
-
 <!-- Email Signup Button & Hidden Form -->
-<div class="email-signup-toggle">
+<div class="email-signup-toggle" id="restock-wrap-{{ section.id }}-{{ variant.id }}">
   <button
     class="restock-toggle-btn"
-    data-target="form-{{ section.id }}"
+    id="restock-btn-{{ section.id }}-{{ variant.id }}"
   >Email When Available
   <svg class="email-button-icon" xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
-<path class="email-button-icon" d="M14.2042 10.5H0V8.16667H14.2042L7.67083 1.63333L9.33333 0L18.6667 9.33333L9.33333 18.6667L7.67083 17.0333L14.2042 10.5Z" fill="white"/>
-</svg> </button>
+    <path class="email-button-icon" d="M14.2042 10.5H0V8.16667H14.2042L7.67083 1.63333L9.33333 0L18.6667 9.33333L9.33333 18.6667L7.67083 17.0333L14.2042 10.5Z" fill="white"/>
+  </svg>
+  </button>
 
-  <div
-    id="form-{{ section.id }}"
-    style="display:none;"
-  >
-    {% form 'customer', data-disable-recaptcha: 'true' %}
-            <input class="email-stock-signup" type="hidden" name="contact[tags]" value="{{ product.id }}-{{ variant.id }}, restock-{{ product.title | handleize }}-{{ variant.title | handleize }}" >
-
-      <label>Email address</label>
-      <input
-        type="email"
-        name="contact[email]"
-        placeholder="Enter your email"
-        required
-      >
-      <button type="submit" class="email-stock-submit" >Notify Me</button>
-    {% endform %}
+  <div id="form-{{ section.id }}-{{ variant.id }}" style="display:none;margin-top:6px;">
+    {%- form 'customer', data-disable-recaptcha: 'true' -%}
+      <input type="hidden" name="contact[tags]" value="{{ product.id }}-{{ variant.id }}, restock-{{ product.title | handleize }}-{{ variant.title | handleize }}">
+      <input type="email" name="contact[email]" placeholder="Enter your email" required class="email-stock-signup">
+      <button type="submit" class="email-stock-submit">Notify Me</button>
+    {%- endform -%}
   </div>
+</div>
+
+<script>
+(function() {
+  var wrapId   = 'restock-wrap-{{ section.id }}-{{ variant.id }}';
+  var btnId    = 'restock-btn-{{ section.id }}-{{ variant.id }}';
+  var formDivId = 'form-{{ section.id }}-{{ variant.id }}';
+
+  var wrap    = document.getElementById(wrapId);
+  var btn     = document.getElementById(btnId);
+  var formDiv = document.getElementById(formDivId);
+  var form    = formDiv ? formDiv.querySelector('form') : null;
+
+  if (btn && formDiv) {
+    btn.addEventListener('click', function() {
+      formDiv.style.display = formDiv.style.display === 'none' ? 'block' : 'none';
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var data = new FormData(form);
+      fetch(form.action, { method: 'POST', body: data })
+        .then(function() { showSuccess(); })
+        .catch(function() { showSuccess(); });
+    });
+  }
+
+  function showSuccess() {
+    if (btn) btn.style.display = 'none';
+    if (formDiv) formDiv.innerHTML = '<p class="restock-success">Got it! We\'ll email you when this is back in stock.</p>';
+    if (formDiv) formDiv.style.display = 'block';
+  }
+})();
+</script>
+
 <style>
 .restock-toggle-btn {
   background: #2F5CAC;
   color: #ffffff;
-  padding: 4px 6px; 
-  border: none; 
-  font-weight: bold; 
-  display: flex; 
-  flex-direction: row; 
+  padding: 4px 6px;
+  border: none;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 4px; 
+  gap: 4px;
+  cursor: pointer;
 }
 
 .email-button-icon {
-    width: .7rem; 
-    height: auto; 
+  width: .7rem;
+  height: auto;
 }
-
 
 .email-stock-submit {
   background: #2F5CAC;
   color: #ffffff;
-  padding: 4px 6px; 
-  border: none; 
-  font-weight: bold; 
+  padding: 4px 6px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .email-stock-signup {
-border: 1px solid #d9d9d9 !important; 
-   
-}
-
-input {
-border: 1px solid #d9d9d9 !important; 
-
+  border: 1px solid #d9d9d9 !important;
 }
 
 .email-signup-toggle {
-padding-top: 5px; 
-
+  padding-top: 5px;
 }
 
-
+.restock-success {
+  font-size: 0.8rem;
+  color: #2a7a2a;
+  margin: 4px 0 0;
+}
 </style>
-
-
-
-
-</div>
