@@ -17,7 +17,7 @@
         "announcement_UqTRF3": {
           "type": "_announcement",
           "settings": {
-            "text": "<strong>FREE SHIPPING OVER $200</strong>",
+            "text": "<strong>Our wholesale portal is currently experiencing outages. If you are experiencing issues please submit all orders to </strong><a><strong>nathan@atonalheadwear.com</strong></a><strong>. Thank you!</strong>",
             "link": "",
             "font": "var(--font-body--family)",
             "font_size": "0.875rem",
