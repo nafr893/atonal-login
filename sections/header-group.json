@@ -17,7 +17,7 @@
         "announcement_UqTRF3": {
           "type": "_announcement",
           "settings": {
-            "text": "<strong>Free Shipping at $200 • Same Day Shipping if order is placed before 1PM CST</strong>",
+            "text": "<strong>Free Shipping at $200</strong>",
             "link": "",
             "font": "var(--font-body--family)",
             "font_size": "0.875rem",
