@@ -42,7 +42,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h1>A590 A Frame <br/>Snapback</h1>",
+            "text": "<h1>A590 A Frame <br/>Snapback </h1>",
             "width": "fit-content",
             "max_width": "narrow",
             "alignment": "left",
