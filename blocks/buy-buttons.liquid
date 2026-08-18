@@ -91,22 +91,6 @@
         </div>
       {%- endform -%}
 
-      {% unless can_add_to_cart %}
-  <div id="back-in-stock-block"></div>
-  <script src="https://a.klaviyo.com/media/js/onsite/onsite.js"></script>
-  <script>
-    var klaviyo = klaviyo || [];
-    klaviyo.init({ account: 'WBSwHe', platform: 'shopify' });
-    klaviyo.enable('backinstock', {
-      trigger: {
-        alternate_anchor: 'back-in-stock-block',
-        product_page_text: 'Notify Me When Available',
-        product_page_class: 'button button-secondary',
-        replace_anchor: false
-      }
-    });
-  </script>
-{% endunless %}
 
     </product-form-component>
   {%- else -%}
