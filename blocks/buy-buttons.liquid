@@ -91,6 +91,15 @@
         </div>
       {%- endform -%}
 
+      <div
+        class="notify-me-wrapper"
+        id="notify-me-{{ block.id }}"
+        {% if can_add_to_cart %}style="display:none;"{% endif %}
+      >
+        <button type="button" class="button notify-me-btn" id="notify-me-btn-{{ block.id }}">
+          Notify Me
+        </button>
+      </div>
 
     </product-form-component>
   {%- else -%}
@@ -106,6 +115,146 @@
     </div>
   {%- endif -%}
 </span>
+
+{% comment %} Klaviyo Back in Stock Modal {% endcomment %}
+<div class="klaviyo-notify-modal" id="klaviyo-modal-{{ block.id }}" aria-hidden="true" style="display:none;">
+  <div class="klaviyo-notify-modal__overlay" id="klaviyo-overlay-{{ block.id }}"></div>
+  <div class="klaviyo-notify-modal__content" role="dialog" aria-modal="true" aria-labelledby="klaviyo-title-{{ block.id }}">
+    <button type="button" class="klaviyo-notify-modal__close" id="klaviyo-close-{{ block.id }}" aria-label="Close">&#215;</button>
+    <h3 class="klaviyo-notify-modal__title" id="klaviyo-title-{{ block.id }}">Notify Me When Available</h3>
+    <p class="klaviyo-notify-modal__subtitle">Enter your email and we'll let you know when this item is back in stock.</p>
+    <div id="klaviyo-notify-form-{{ block.id }}">
+      <input
+        type="email"
+        class="klaviyo-notify-modal__input"
+        id="klaviyo-email-{{ block.id }}"
+        placeholder="Email address"
+        autocomplete="email"
+        required
+      >
+      <button type="button" class="button klaviyo-notify-modal__submit" id="klaviyo-submit-{{ block.id }}">
+        Sign Up
+      </button>
+    </div>
+    <div id="klaviyo-notify-success-{{ block.id }}" style="display:none;">
+      <p class="klaviyo-notify-modal__success">You're in! We'll email you when this is back in stock.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var KLAVIYO_KEY = 'WBSwHe';
+  var bid = '{{ block.id }}';
+
+  var notifyWrapper = document.getElementById('notify-me-' + bid);
+  var notifyBtn     = document.getElementById('notify-me-btn-' + bid);
+  var modal         = document.getElementById('klaviyo-modal-' + bid);
+  var overlay       = document.getElementById('klaviyo-overlay-' + bid);
+  var closeBtn      = document.getElementById('klaviyo-close-' + bid);
+  var submitBtn     = document.getElementById('klaviyo-submit-' + bid);
+  var emailInput    = document.getElementById('klaviyo-email-' + bid);
+  var formDiv       = document.getElementById('klaviyo-notify-form-' + bid);
+  var successDiv    = document.getElementById('klaviyo-notify-success-' + bid);
+
+  var productForm = document.getElementById('BuyButtons-ProductForm-' + bid);
+  var atcButton   = productForm ? productForm.querySelector('button[name="add"]') : null;
+
+  // Keep Notify Me in sync with ATC button disabled state (variant switches)
+  if (atcButton && notifyWrapper) {
+    var syncVisibility = function () {
+      notifyWrapper.style.display = atcButton.disabled ? 'block' : 'none';
+    };
+    new MutationObserver(syncVisibility).observe(atcButton, { attributes: true, attributeFilter: ['disabled'] });
+  }
+
+  // Open modal
+  if (notifyBtn) {
+    notifyBtn.addEventListener('click', function () {
+      modal.style.display = 'flex';
+      modal.removeAttribute('aria-hidden');
+      document.body.style.overflow = 'hidden';
+      if (emailInput) emailInput.focus();
+    });
+  }
+
+  // Close modal
+  function closeModal() {
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  if (closeBtn)  closeBtn.addEventListener('click', closeModal);
+  if (overlay)   overlay.addEventListener('click', closeModal);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && modal && modal.style.display === 'flex') closeModal();
+  });
+
+  // Submit to Klaviyo
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function () {
+      var email = emailInput ? emailInput.value.trim() : '';
+      if (!email || !emailInput.checkValidity()) {
+        emailInput.reportValidity();
+        return;
+      }
+
+      var variantInput = productForm ? productForm.querySelector('input[name="id"]') : null;
+      var variantId = variantInput ? variantInput.value : null;
+      if (!variantId) return;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing up…';
+
+      fetch('https://a.klaviyo.com/client/back-in-stock-subscriptions/?company_id=' + KLAVIYO_KEY, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'revision': '2023-12-15'
+        },
+        body: JSON.stringify({
+          data: {
+            type: 'back-in-stock-subscription',
+            attributes: {
+              channels: ['EMAIL'],
+              profile: {
+                data: {
+                  type: 'profile',
+                  attributes: { email: email }
+                }
+              }
+            },
+            relationships: {
+              variant: {
+                data: {
+                  type: 'catalog-variant',
+                  id: '$shopify:::$default:::' + variantId
+                }
+              }
+            }
+          }
+        })
+      })
+      .then(function (res) {
+        if (res.ok || res.status === 202) {
+          formDiv.style.display = 'none';
+          successDiv.style.display = 'block';
+        } else {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign Up';
+          alert('Something went wrong. Please try again.');
+        }
+      })
+      .catch(function () {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign Up';
+        alert('Something went wrong. Please try again.');
+      });
+    });
+  }
+})();
+</script>
 
 {% if block.settings.show_pickup_availability %}
   <script
@@ -381,6 +530,101 @@
   .pickup-location__close-button svg {
     width: var(--icon-size-xs);
     height: var(--icon-size-xs);
+  }
+
+  /* Notify Me button */
+  .notify-me-wrapper {
+    width: 100%;
+  }
+
+  .notify-me-btn {
+    width: 100%;
+    padding-inline: var(--padding-4xl);
+    padding-block: var(--padding-lg);
+    height: var(--height-buy-buttons);
+  }
+
+  /* Klaviyo Back in Stock Modal */
+  .klaviyo-notify-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .klaviyo-notify-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .klaviyo-notify-modal__content {
+    position: relative;
+    background: var(--color-background);
+    color: rgb(var(--color-foreground));
+    padding: 2rem;
+    max-width: 420px;
+    width: calc(100% - 2rem);
+    border-radius: var(--style-border-radius-inputs, 4px);
+    z-index: 1;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  }
+
+  .klaviyo-notify-modal__close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    color: rgb(var(--color-foreground));
+    padding: 0.25rem 0.5rem;
+  }
+
+  .klaviyo-notify-modal__title {
+    margin: 0 0 0.4rem;
+    font-size: 1.2rem;
+  }
+
+  .klaviyo-notify-modal__subtitle {
+    font-size: 0.8rem;
+    margin: 0 0 1.2rem;
+    opacity: 0.65;
+  }
+
+  .klaviyo-notify-modal__input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-family: inherit;
+    border: 0.1rem solid #d9d9d9;
+    border-radius: var(--style-border-radius-inputs, 4px);
+    background-color: #f9f9f9;
+    color: rgb(var(--color-foreground));
+    margin-bottom: 0.75rem;
+    outline: none;
+  }
+
+  .klaviyo-notify-modal__input:focus {
+    border-color: #999;
+  }
+
+  .klaviyo-notify-modal__submit {
+    width: 100%;
+    padding-block: var(--padding-lg);
+  }
+
+  .klaviyo-notify-modal__success {
+    font-size: 0.9rem;
+    color: #2a7a2a;
+    text-align: center;
+    padding: 0.5rem 0 0;
+    margin: 0;
   }
 {% endstylesheet %}
 
