@@ -212,15 +212,31 @@
       submitBtn.disabled = true;
       submitBtn.textContent = 'Signing up…';
 
-      fetch('https://a.klaviyo.com/onsite/components/back-in-stock/subscribe', {
+      fetch('https://a.klaviyo.com/client/back-in-stock-subscriptions/?company_id=' + KLAVIYO_KEY, {
         method: 'POST',
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          a: KLAVIYO_KEY,
-          email: email,
-          variant: variantId,
-          platform: 'shopify'
-        }).toString()
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          data: {
+            type: 'back-in-stock-subscription',
+            attributes: {
+              channels: ['EMAIL'],
+              profile: {
+                data: {
+                  type: 'profile',
+                  attributes: { email: email }
+                }
+              }
+            },
+            relationships: {
+              variant: {
+                data: {
+                  type: 'catalog-variant',
+                  id: '$shopify:::$default:::' + variantId
+                }
+              }
+            }
+          }
+        })
       })
       .then(function (res) {
         if (res.ok || res.status === 202) {
