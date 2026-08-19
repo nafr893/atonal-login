@@ -160,15 +160,20 @@
     if (!atcButton) return;
     if (atcButton.disabled) {
       if (notifyOverlay) notifyOverlay.style.display = 'block';
+      atcButton.style.opacity = '1';
+      atcButton.style.filter = 'none';
       var textEl = atcButton.querySelector('.add-to-cart-text__content');
       if (textEl) textEl.textContent = 'Notify Me';
     } else {
       if (notifyOverlay) notifyOverlay.style.display = 'none';
+      atcButton.style.opacity = '';
+      atcButton.style.filter = '';
     }
   }
 
   if (atcButton) {
     new MutationObserver(syncState).observe(atcButton, { attributes: true, attributeFilter: ['disabled'] });
+    syncState(); // handle initial page-load state
   }
 
   // Open / close modal
@@ -546,6 +551,12 @@
 
   product-form-component {
     position: relative;
+  }
+
+  /* When notify overlay is active (no display:none), force button to full color */
+  product-form-component:has(.notify-me-overlay:not([style*="none"])) .add-to-cart-button[disabled] {
+    opacity: 1;
+    filter: none;
   }
 
   /* Klaviyo Back in Stock Modal */
