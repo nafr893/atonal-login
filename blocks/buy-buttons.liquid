@@ -545,12 +545,14 @@
   .notify-me-overlay {
     position: absolute;
     inset: 0;
-    cursor: pointer;
-    z-index: 5;
+    cursor: pointer !important;
+    z-index: 100;
+    pointer-events: auto !important;
   }
 
   product-form-component {
     position: relative;
+    display: block;
   }
 
   /* When notify overlay is active (no display:none), force button to full color */
