@@ -70,7 +70,7 @@
   {%- if inventory_quantity <= 50 -%}
     {{ 'content.inventory_low_stock_show_count' | t: count: inventory_quantity }}
   {%- else -%}
-    {{ 'content.inventory_in_stock' | t }}
+    {{ 'content.inventory_in_stock_show_count' | t: count: inventory_quantity }}
   {%- endif -%}
 {%- else -%}
   {{ translation_key | t }} | Restock ETA: {{ variant.metafields.custom.variant_stock_eta }}
@@ -111,6 +111,11 @@
 
   .product-inventory__icon circle:first-of-type {
     opacity: 0.3;
+  }
+
+  /* Hide duplicate product-inventory renders (old for-loop vs new content_for double render) */
+  product-inventory ~ product-inventory {
+    display: none !important;
   }
 {% endstylesheet %}
 
