@@ -46,6 +46,7 @@
     product-inventory spacing-style
     {% if block.settings.type_preset != '' %}{{ block.settings.type_preset }}{% endif%}
   "
+  style="display:none;"
   style="{% render 'spacing-style', settings: block.settings %}"
   {{ block.shopify_attributes }}
   data-product-id="{{ product.id }}"
