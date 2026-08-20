@@ -70,7 +70,7 @@
   {%- if inventory_quantity <= 50 -%}
     {{ 'content.inventory_low_stock_show_count' | t: count: inventory_quantity }}
   {%- else -%}
-    {{ 'content.inventory_in_stock_show_count' | t: count: inventory_quantity }}
+    {{ 'content.inventory_in_stock' | t }}
   {%- endif -%}
 {%- else -%}
   {{ translation_key | t }} | Restock ETA: {{ variant.metafields.custom.variant_stock_eta }}
