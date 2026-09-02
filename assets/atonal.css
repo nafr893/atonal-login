@@ -924,3 +924,7 @@ display: none !important;
   }
 
 }
+
+h4.gsinventory {
+  display: none;
+}
