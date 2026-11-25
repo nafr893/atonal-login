@@ -33,8 +33,8 @@
             "corner_radius": 0,
             "padding-block-start": 5,
             "padding-block-end": 5,
-            "padding-inline-start": 5,
-            "padding-inline-end": 5
+            "padding-inline-start": 10,
+            "padding-inline-end": 10
           },
           "blocks": {}
         },
